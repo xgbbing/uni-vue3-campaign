@@ -1,4 +1,7 @@
-import { AssetPriority as P } from "./AssetManager";
+import {
+  AssetPriority as P,
+  AssetType as T,
+} from "../managers/useAssetManager";
 
 export const scenes = [
   {
@@ -7,38 +10,38 @@ export const scenes = [
       {
         id: "index-bg",
         url: "./static/index-bg.jpg",
-        type: "image",
-        priority: P.CRITICAL,
+        type: T.IMAGE,
+        priority: P.BLOCKING,
       },
       {
         id: "bg-music",
         url: "./static/bg-music.wav",
-        type: "video",
-        priority: P.HIGH,
+        type: T.VIDEO,
+        priority: P.BLOCKING,
       },
       {
         id: "rules-btn",
         url: "./static/rules-btn.jpg",
-        type: "image",
-        priority: P.HIGH,
+        type: T.IMAGE,
+        priority: P.IMPORTANT,
       },
       {
         id: "music-play",
         url: "./static/music-play.jpg",
-        type: "image",
-        priority: P.CRITICAL,
+        type: T.IMAGE,
+        priority: P.IMPORTANT,
       },
       {
         id: "music-stop",
         url: "./static/music-stop.jpg",
-        type: "image",
-        priority: P.CRITICAL,
+        type: T.IMAGE,
+        priority: P.IMPORTANT,
       },
       {
-        id: "rule-bg",
-        url: "./static/rule-bg.jpg",
-        type: "image",
-        priority: P.CRITICAL,
+        id: "rules-bg",
+        url: "./static/rules-bg.jpg",
+        type: T.IMAGE,
+        priority: P.IMPORTANT,
       },
     ],
   },
@@ -48,20 +51,20 @@ export const scenes = [
       {
         id: "guide-bg",
         url: "./static/guide-bg.jpg",
-        type: "image",
-        priority: P.HIGH,
+        type: T.IMAGE,
+        priority: P.BLOCKING,
       },
       {
         id: "guide-next",
         url: "./static/guide-next.jpg",
-        type: "image",
-        priority: P.HIGH,
+        type: T.IMAGE,
+        priority: P.IMPORTANT,
       },
       {
         id: "guide-chat1",
         url: "./static/guide-chat1.jpg",
-        type: "image",
-        priority: P.HIGH,
+        type: T.IMAGE,
+        priority: P.IMPORTANT,
       },
     ],
   },

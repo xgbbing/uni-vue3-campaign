@@ -1,9 +1,14 @@
 <template>
   <view class="container">
     <!-- loading -->
-    <view v-if="loading" class="loading">加载中...</view>
+    <!-- <view v-if="loading" class="loading">加载中...</view> -->
+    <up-loading-page
+      v-if="loading"
+      :loading="loading"
+      loading-text=""
+    ></up-loading-page>
 
-    <view>
+    <view v-else>
       <image class="bg-image" src="/static/index-bg.jpg"></image>
       <HeaderIcons />
 
@@ -36,10 +41,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { onLoad, onShow } from "@dcloudio/uni-app";
+import { onLoad } from "@dcloudio/uni-app";
 import RulesPopup from "@/components/RulesPopup.vue";
 import HeaderIcons from "@/components/HeaderIcons.vue";
-import { sceneManager } from "@/managers/SceneManager";
+import { useSceneManager } from "@/managers/useSceneManager";
 
 defineOptions({
   options: {
@@ -50,6 +55,7 @@ defineOptions({
 const loading = ref(true);
 // 弹窗部分
 const rulesPopupVisible = ref<boolean>(false);
+const { enter } = useSceneManager();
 const showRulesPopup = () => {
   rulesPopupVisible.value = true;
 };
@@ -64,7 +70,7 @@ const goPlay = async () => {
     });
     return;
   }
-  await sceneManager.enter("guide");
+  await enter("guide");
   uni.navigateTo({
     url: "/pages/guide/guide",
   });
@@ -79,7 +85,8 @@ const goToPage = (page: string) => {
 
 // 页面初始化
 onLoad(async () => {
-  await sceneManager.enter("home");
+  await enter("home");
+  console.log("=======vvvvvv");
   loading.value = false;
 });
 </script>

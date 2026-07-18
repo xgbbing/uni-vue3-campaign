@@ -1,12 +1,11 @@
-import { sceneManager } from "@/managers/SceneManager";
-import { scenes } from "@/managers/scenes";
-import { sceneFlow } from "@/managers/sceneFlow";
-import { pageManager } from "@/managers/PageManager";
-import { SceneConfig } from "@/config/scene.config";
+import { useSceneManager } from "@/managers/useSceneManager";
+import type { SceneConfig } from "@/managers/useSceneManager";
+import { scenes } from "@/config/scenes.config";
+import { sceneFlow } from "@/config/sceneFlow.config";
 export function initScene() {
-  scenes.forEach((scene) => {
-    sceneManager.register(scene);
+  const { register, start } = useSceneManager();
+  scenes.forEach((scene: SceneConfig) => {
+    register(scene);
   });
-  sceneManager.start(sceneFlow);
-  pageManager.register(SceneConfig);
+  start(sceneFlow);
 }
