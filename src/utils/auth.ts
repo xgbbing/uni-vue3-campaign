@@ -15,12 +15,12 @@ export function getToken() {
 /**
  * 保存 Token
  */
-export function setToken(token) {
+export function setToken(token: string) {
   uni.setStorageSync(TOKEN_KEY, token);
 }
 
 export function removeToken() {
-  uni.removeStorage(TOKEN_KEY);
+  uni.removeStorage({ key: TOKEN_KEY });
 }
 
 /**
@@ -45,7 +45,7 @@ function redirectWechatOAuth() {
  */
 export async function ensureLogin() {
   // ① URL 有没有 token（小程序传过来的）
-  const params = getQueryParams();
+  const params: any = getQueryParams();
   console.log(params, "====params");
   const urlToken = params?.[URL_TOKEN_KEY];
   if (urlToken) {
@@ -64,10 +64,10 @@ export async function ensureLogin() {
   // ③ OAuth 回来的 code
   if (params?.code) {
     try {
-      const res = await loginByCode({
+      const res: any = await loginByCode({
         code: params?.code,
       });
-      setToken(res.token);
+      setToken(res?.token);
       // 清除 code
       const url = new URL(window.location.href);
       url.searchParams.delete("code");

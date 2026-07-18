@@ -34,11 +34,11 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, markRaw } from "vue";
 import { onLoad, onShow, onLaunch } from "@dcloudio/uni-app";
-import RulesPopup from "@/components/RulesPopup";
-import HeaderIcons from "@/components/HeaderIcons";
+import RulesPopup from "@/components/RulesPopup.vue";
+import HeaderIcons from "@/components/HeaderIcons.vue";
 import { isWechatBrowser } from "@/utils/index";
 // import { useAssetLoader } from "@/hooks/useAssetLoader";
 // import { useIdleLoader } from "@/hooks/useIdleLoader";
@@ -67,13 +67,13 @@ const loading = ref(true);
 // loading.value = false;
 
 // 弹窗部分
-const rulesPopupVisible = ref(false);
+const rulesPopupVisible = ref<boolean>(false);
 const showRulesPopup = () => {
   rulesPopupVisible.value = true;
 };
 
 // 勾选协议
-const checkedList = ref([]);
+const checkedList = ref<any>([]);
 const goPlay = async () => {
   if (!checkedList.value.includes("agree")) {
     uni.showToast({
@@ -93,7 +93,7 @@ const goPlay = async () => {
 };
 
 // 跳转页面
-const goToPage = (page) => {
+const goToPage = (page: string) => {
   uni.navigateTo({
     url: `/pages/${page}`,
   });

@@ -1,0 +1,1 @@
+const c="/webapp/campaign-h5/static/good.jpg";function n(c){const{bgMusic:n}=c;let o;return o=new Audio,o.src=n,{playMusic:function(){const c=o.play();c instanceof Promise&&c.catch(c=>{console.log("自动播放失败:",c)})},pauseMusic:function(){o.pause()}}}export{c as _,n as u};

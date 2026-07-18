@@ -14,7 +14,9 @@
       "dom"
     ],
     "types": [
-      "@dcloudio/types"
+      "@dcloudio/types",
+      "node",
+      "uview-plus/types"
     ]
   },
   "include": [

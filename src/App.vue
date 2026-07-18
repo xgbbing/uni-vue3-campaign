@@ -2,6 +2,7 @@
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 import { initScene } from "@/bootstrap/initScene";
 import { ensureLogin } from "@/utils/auth";
+
 onLaunch(async () => {
   console.log("App Launch");
   initScene();

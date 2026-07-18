@@ -3,8 +3,8 @@ import bgMusic from "@/static/bg-music.wav";
 
 export const useMusicStore = defineStore("music", {
   state: () => ({
-    isPlaying: false,
-    audioContext: null, // 音频实例
+    isPlaying: false as boolean,
+    audioContext: null as any, // 音频实例
   }),
   actions: {
     // 初始化音频（如果尚未创建）
