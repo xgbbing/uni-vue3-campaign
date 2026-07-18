@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "chat-dialog": "./components/ChatDialog",
+    "video-dialog": "./components/VideoDialog",
+    "result-dialog": "./components/ResultDialog",
+    "video-player": "./components/VideoPlayer",
+    "header-icons": "../../components/HeaderIcons"
+  }
+}

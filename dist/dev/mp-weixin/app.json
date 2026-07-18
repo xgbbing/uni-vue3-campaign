@@ -1,0 +1,20 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/play/play",
+    "pages/play/play-second",
+    "pages/agreement/privacy-policy",
+    "components/HeaderIcons",
+    "pages/guide/guide",
+    "pages/guide/components/ChatDialog",
+    "pages/guide/components/VideoPlayer"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "",
+    "navigationStyle": "custom",
+    "navigationBarBackgroundColor": "#fff",
+    "backgroundColor": "#fff"
+  },
+  "usingComponents": {}
+}

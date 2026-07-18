@@ -1,0 +1,1 @@
+{"version":3,"file":"HeaderIcons2.js","sources":["/Users/alice/Desktop/quanyucode/uni-vue3-campaign/src/components/HeaderIcons.vue?type=page"],"sourcesContent":["import MiniProgramPage from '/Users/alice/Desktop/quanyucode/uni-vue3-campaign/src/components/HeaderIcons.vue'\nwx.createPage(MiniProgramPage)"],"names":["MiniProgramPage"],"mappings":";;AACA,GAAG,WAAWA,YAAAA,eAAe;"}

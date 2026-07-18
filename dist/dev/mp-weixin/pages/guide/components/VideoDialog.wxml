@@ -1,0 +1,1 @@
+<view class="{{['mask', 'data-v-4d50e082', virtualHostClass]}}" style="{{virtualHostStyle}}" hidden="{{virtualHostHidden || false}}" id="{{d}}"><view class="dialog data-v-4d50e082"><image class="cover data-v-4d50e082" src="{{a}}" mode="aspectFill"/><image class="play data-v-4d50e082" src="{{b}}" bindtap="{{c}}" mode="aspectFill"/></view></view>

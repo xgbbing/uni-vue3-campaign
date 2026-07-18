@@ -1,1 +1,0 @@
-import{t as s,c as t,w as a,i as n,h as r,l as e,F as i}from"./index-CchK83IG.js";const o=s({},[["render",function(s,o){const c=i,l=n;return r(),t(l,null,{default:a(()=>[e(c,{src:"https://xgbbing.win"})]),_:1})}]]);export{o as default};

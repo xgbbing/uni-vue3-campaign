@@ -1,0 +1,1 @@
+{"version":3,"file":"ChatDialog.js","sources":["pages/guide/components/ChatDialog.vue?type=page"],"sourcesContent":["import MiniProgramPage from '/Users/alice/Desktop/quanyucode/uni-vue3-campaign/src/pages/guide/components/ChatDialog.vue'\nwx.createPage(MiniProgramPage)"],"names":["MiniProgramPage"],"mappings":";;AACA,GAAG,WAAWA,WAAAA,eAAe;"}

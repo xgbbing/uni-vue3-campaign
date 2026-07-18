@@ -1,0 +1,1 @@
+{"version":3,"file":"VideoPlayer.js","sources":["pages/guide/components/VideoPlayer.vue?type=page"],"sourcesContent":["import MiniProgramPage from '/Users/alice/Desktop/quanyucode/uni-vue3-campaign/src/pages/guide/components/VideoPlayer.vue'\nwx.createPage(MiniProgramPage)"],"names":["MiniProgramPage"],"mappings":";;AACA,GAAG,WAAWA,YAAAA,eAAe;"}

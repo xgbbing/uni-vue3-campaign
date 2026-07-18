@@ -35,16 +35,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from "vue";
-import { onLoad, onShow, onLaunch } from "@dcloudio/uni-app";
+import { ref } from "vue";
+import { onLoad, onShow } from "@dcloudio/uni-app";
 import RulesPopup from "@/components/RulesPopup.vue";
 import HeaderIcons from "@/components/HeaderIcons.vue";
-import { isWechatBrowser } from "@/utils/index";
-// import { useAssetLoader } from "@/hooks/useAssetLoader";
-// import { useIdleLoader } from "@/hooks/useIdleLoader";
-// import { usePreloadManager } from "@/hooks/usePreloadManager";
 import { sceneManager } from "@/managers/SceneManager";
-import { scenes } from "@/managers/scenes";
 
 defineOptions({
   options: {
@@ -52,20 +47,7 @@ defineOptions({
   },
 });
 
-// const { idleLoad } = useIdleLoader();
-
-// const {progress,preloadScene } = usePreloadManager();
-
-// const { progress, loading, loadAssets } = useAssetLoader();
-
-// const ready = ref(false);
-
 const loading = ref(true);
-
-// await preloadScene(homeScene, true);
-
-// loading.value = false;
-
 // 弹窗部分
 const rulesPopupVisible = ref<boolean>(false);
 const showRulesPopup = () => {
@@ -82,10 +64,6 @@ const goPlay = async () => {
     });
     return;
   }
-  // 	await preloadScene(
-  //  page2Scene,
-  //  true
-  // )
   await sceneManager.enter("guide");
   uni.navigateTo({
     url: "/pages/guide/guide",
@@ -104,30 +82,14 @@ onLoad(async () => {
   await sceneManager.enter("home");
   loading.value = false;
 });
-
-onShow(() => {
-  // await loadAssets(firstScreen);
-  // ready.value = true;
-  // // 后台加载
-  // idleLoad(() => {
-  //   loadAssets(lazyAssets);
-  // });
-  // preloadScene(page2Scene, false);
-  // sceneManager.preloadNext("guide");
-});
 </script>
 
 <style lang="scss" scoped>
 .container {
-  // display: flex;
-  // flex-direction: column;
-  // align-items: center;
-  // justify-content: center;
-
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
   .bg-image {
     position: absolute;
