@@ -1,0 +1,1 @@
+import{p as a,c as s,h as t,k as c}from"./index-DplCJqz0.js";const e=a({},[["render",function(a,e){const d=c;return t(),s(d,{class:"dialog",src:"/webapp/campaign-h5/static/guide-chat1.jpg"})}],["__scopeId","data-v-8f4018d1"]]);export{e as default};

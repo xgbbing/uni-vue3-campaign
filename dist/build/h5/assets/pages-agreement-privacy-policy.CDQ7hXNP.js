@@ -1,1 +1,0 @@
-import{q as s,c as a,w as n,i as t,g as r,k as e,E as i}from"./index-DSTzstmj.js";const o=s({},[["render",function(s,o){const c=i,u=t;return r(),a(u,null,{default:n(()=>[e(c,{src:"https://xgbbing.win"})]),_:1})}]]);export{o as default};

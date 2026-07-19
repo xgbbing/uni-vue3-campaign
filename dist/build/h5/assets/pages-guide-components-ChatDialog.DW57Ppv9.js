@@ -1,1 +1,0 @@
-import{q as a,c as s,g as t,l as c}from"./index-DSTzstmj.js";const e=a({},[["render",function(a,e){const d=c;return t(),s(d,{class:"dialog",src:"/webapp/campaign-h5/static/guide-chat1.jpg"})}],["__scopeId","data-v-8f4018d1"]]);export{e as default};
