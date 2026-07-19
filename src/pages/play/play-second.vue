@@ -1,75 +1,86 @@
 <template>
   <view class="page-container">
-    <!-- 背景 -->
-    <image class="bg" src="/static/open-before.jpg" mode="aspectFill" />
+    <!-- loading -->
+    <up-loading-page
+      v-if="loading"
+      :loading="loading"
+      loading-text=""
+    ></up-loading-page>
 
-    <!-- 调试控制按钮（仅 showDebug 为 true 时显示） -->
-    <view
-      class="debug-controls"
-      v-if="showDebug && !isSuccess"
-      @touchmove.stop.prevent
-    >
-      <view class="control-row">
-        <view class="control-btn" @touchstart.stop="zoomIn">放大</view>
-        <view class="control-btn" @touchstart.stop="zoomOut">缩小</view>
-      </view>
-      <view class="control-row">
-        <view class="control-btn" @touchstart.stop="rotateCW">顺时针</view>
-        <view class="control-btn" @touchstart.stop="rotateCCW">逆时针</view>
-      </view>
-    </view>
+    <view v-else>
+      <!-- 背景 -->
+      <image class="bg" src="/static/open-before.jpg" mode="aspectFill" />
 
-    <!-- 可拖动的手机图片 -->
-    <view
-      class="draggable-phone"
-      :style="phoneStyle"
-      @touchstart="onTouchStart"
-      @touchmove.stop.prevent="onTouchMove"
-      @touchend="onTouchEnd"
-    >
-      <image class="phone" src="/static/phone.png" mode="aspectFill" />
-    </view>
-
-    <!-- 调试信息（开发时使用，生产环境可删除） -->
-    <view class="debug-panel" v-if="showDebug && !isSuccess">
-      <text class="debug-text"
-        >偏移: X={{ Math.round(currentOffsetX) }}px Y={{
-          Math.round(currentOffsetY)
-        }}px</text
+      <!-- 调试控制按钮（仅 showDebug 为 true 时显示） -->
+      <view
+        class="debug-controls"
+        v-if="showDebug && !isSuccess"
+        @touchmove.stop.prevent
       >
-      <text class="debug-text">缩放: {{ currentScale.toFixed(2) }}x</text>
-      <text class="debug-text">旋转: {{ currentRotation.toFixed(1) }}°</text>
-      <text class="debug-text"
-        >距目标: {{ distanceToTarget.toFixed(0) }}px | 角度:
-        {{ angleDiff.toFixed(1) }}°</text
+        <view class="control-row">
+          <view class="control-btn" @touchstart.stop="zoomIn">放大</view>
+          <view class="control-btn" @touchstart.stop="zoomOut">缩小</view>
+        </view>
+        <view class="control-row">
+          <view class="control-btn" @touchstart.stop="rotateCW">顺时针</view>
+          <view class="control-btn" @touchstart.stop="rotateCCW">逆时针</view>
+        </view>
+      </view>
+
+      <!-- 可拖动的手机图片 -->
+      <view
+        class="draggable-phone"
+        :style="phoneStyle"
+        @touchstart="onTouchStart"
+        @touchmove.stop.prevent="onTouchMove"
+        @touchend="onTouchEnd"
       >
-      <text class="debug-text">状态: {{ isSuccess ? "成功" : "偏离" }}</text>
+        <image class="phone" src="/static/phone.png" mode="aspectFill" />
+      </view>
+
+      <!-- 调试信息（开发时使用，生产环境可删除） -->
+      <view class="debug-panel" v-if="showDebug && !isSuccess">
+        <text class="debug-text"
+          >偏移: X={{ Math.round(currentOffsetX) }}px Y={{
+            Math.round(currentOffsetY)
+          }}px</text
+        >
+        <text class="debug-text">缩放: {{ currentScale.toFixed(2) }}x</text>
+        <text class="debug-text">旋转: {{ currentRotation.toFixed(1) }}°</text>
+        <text class="debug-text"
+          >距目标: {{ distanceToTarget.toFixed(0) }}px | 角度:
+          {{ angleDiff.toFixed(1) }}°</text
+        >
+        <text class="debug-text">状态: {{ isSuccess ? "成功" : "偏离" }}</text>
+      </view>
+
+      <!-- 成功动画 -->
+      <image
+        v-if="isSuccess"
+        class="thumb"
+        src="/static/good.jpg"
+        mode="widthFix"
+      />
+
+      <!-- 下一步 -->
+      <image
+        v-if="isSuccess"
+        class="next"
+        src="/static/guide-next.jpg"
+        @click="next"
+      />
     </view>
-
-    <!-- 成功动画 -->
-    <image
-      v-if="isSuccess"
-      class="thumb"
-      src="/static/good.jpg"
-      mode="widthFix"
-    />
-
-    <!-- 下一步 -->
-    <image
-      v-if="isSuccess"
-      class="next"
-      src="/static/guide-next.jpg"
-      @click="next"
-    />
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, reactive, onMounted, onUnmounted } from "vue";
-import bgMusic from "@/static/bg-music.wav";
-import { useAudio } from "@/hooks/useAudio";
+import { useAudioManager } from "@/managers/useAudioManager";
+import { useSceneManager } from "@/managers/useSceneManager";
+import { onLoad } from "@dcloudio/uni-app";
 
 // ==================== 配置参数 ====================
+const successMusic = "static/bg-music.wav";
 // 手机图片尺寸（与镂空框一致）
 const PHONE_WIDTH = 200;
 const PHONE_HEIGHT = 200;
@@ -98,7 +109,7 @@ const currentRotation = ref(0); // 当前旋转角度（度）
 const isSuccess = ref(false); // 是否已成功
 const showDebug = ref(true); // 是否显示调试面板（生产环境设为false）
 
-const { playMusic, pauseMusic } = useAudio({ bgMusic });
+const { playEffect, pauseEffect } = useAudioManager();
 
 // ==================== 手势中间状态 ====================
 const gestureState = reactive({
@@ -150,6 +161,15 @@ const angleDiff = computed(() => {
 });
 
 // ==================== 初始化 ====================
+
+const { enter } = useSceneManager();
+const loading = ref(true);
+
+// 页面初始化
+onLoad(async () => {
+  await enter("play");
+  loading.value = false;
+});
 function generateInitialState() {
   // 随机缩放：0.5 ~ 1.5
   const scale =
@@ -280,7 +300,7 @@ function triggerSuccess() {
   }
 
   console.log("✅ 成功！图片已归位");
-  playMusic();
+  playEffect(successMusic);
 }
 
 // ==================== 手势处理 ====================
@@ -485,7 +505,7 @@ function onTouchEnd(e) {
 }
 
 function next() {
-  pauseMusic();
+  pauseEffect(successMusic);
 }
 
 // ==================== 生命周期 ====================

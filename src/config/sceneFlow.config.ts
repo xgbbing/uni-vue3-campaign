@@ -1,7 +1,10 @@
 export const sceneFlow = {
-  initial: "home",
+  initial: "index",
   preload: {
-    home: ["guide"],
-    guide: ["play"],
+    index: ["guide"],
+    guide: ["guide2"],
+    guide2: ["guide3"],
+    guide3: ["play"],
+    play: ["playSecond"],
   },
 };

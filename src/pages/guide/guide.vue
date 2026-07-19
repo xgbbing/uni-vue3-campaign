@@ -1,22 +1,31 @@
 <template>
   <view class="page">
-    <!-- 背景 -->
-    <image class="bg" src="/static/guide-bg.jpg" mode="aspectFill" />
-    <HeaderIcons />
+    <!-- loading -->
+    <up-loading-page
+      v-if="loading"
+      :loading="loading"
+      loading-text=""
+    ></up-loading-page>
 
-    <!-- 返回 -->
-    <view class="back" @click="back">{{ "<" }}返回</view>
+    <view v-else>
+      <!-- 背景 -->
+      <image class="bg" src="/static/guide-bg.jpg" mode="aspectFill" />
+      <HeaderIcons />
 
-    <!-- 中间弹窗 -->
-    <ChatDialog v-if="step === 1" />
-    <VideoDialog v-if="step === 2" @play="openVideo" />
-    <ResultDialog v-if="step === 3" />
+      <!-- 返回 -->
+      <view class="back" @click="back">{{ "<" }}返回</view>
 
-    <!-- 下一步 -->
-    <image class="next" src="/static/guide-next.jpg" @click="next" />
+      <!-- 中间弹窗 -->
+      <ChatDialog v-if="step === 1" />
+      <VideoDialog v-if="step === 2" @play="openVideo" />
+      <ResultDialog v-if="step === 3" />
 
-    <!-- 视频 -->
-    <VideoPlayer v-model:show="showVideo" src="/static/guide-bgm.mp4" />
+      <!-- 下一步 -->
+      <image class="next" src="/static/guide-next.jpg" @click="next" />
+
+      <!-- 视频 -->
+      <VideoPlayer v-model:show="showVideo" src="/static/guide-bgm.mp4" />
+    </view>
   </view>
 </template>
 
@@ -27,24 +36,41 @@ import VideoDialog from "./components/VideoDialog.vue";
 import ResultDialog from "./components/ResultDialog.vue";
 import VideoPlayer from "./components/VideoPlayer.vue";
 import HeaderIcons from "@/components/HeaderIcons.vue";
-import { useMusicStore } from "../../store/music";
-
-const musicStore = useMusicStore();
+import { useAudioManager } from "@/managers/useAudioManager";
+import { onLoad } from "@dcloudio/uni-app";
+import { useSceneManager } from "@/managers/useSceneManager";
 
 const step = ref(1);
-
 const showVideo = ref(false);
+const { pauseBGM } = useAudioManager();
+const { enter } = useSceneManager();
+const loading = ref(true);
 
+// 页面初始化
+onLoad(async () => {
+  await enter("guide");
+  loading.value = false;
+});
 function openVideo() {
-  musicStore.pause();
+  pauseBGM();
   showVideo.value = true;
 }
 
-const next = () => {
+const next = async () => {
+  if (step.value === 1) {
+    loading.value = true;
+    await enter("guide2");
+    loading.value = false;
+  }
+  if (step.value === 2) {
+    loading.value = true;
+    await enter("guide3");
+    loading.value = false;
+  }
   if (step.value < 3) {
     step.value++;
   } else {
-    musicStore.pause();
+    pauseBGM();
     uni.navigateTo({
       url: "/pages/play/play",
     });

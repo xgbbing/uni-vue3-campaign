@@ -20,16 +20,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { useMusicStore } from "@/store/music"; // Pinia store
-import RulesPopup from "./RulesPopup.vue"; // 之前定义的弹窗组件
+import { computed, ref } from "vue";
+import RulesPopup from "@/components/RulesPopup.vue"; // 之前定义的弹窗组件
 import { onLoad } from "@dcloudio/uni-app";
+import { useAudioManager } from "@/managers/useAudioManager";
 
-const musicStore = useMusicStore();
 const rulesVisible = ref(false);
+const { playBGM, pauseBGM, activeBGM } = useAudioManager();
 
-// 音乐播放状态（从 store 获取）
-const isPlaying = computed(() => musicStore.isPlaying);
+const isPlaying = computed(() => !!activeBGM.value);
 
 // 显示活动规则
 const showRules = () => {
@@ -38,15 +37,14 @@ const showRules = () => {
 
 // 切换音乐播放/暂停
 const toggleMusic = () => {
-  if (musicStore.isPlaying) {
-    musicStore.pause();
+  if (isPlaying.value) {
+    pauseBGM();
   } else {
-    musicStore.play();
+    playBGM();
   }
 };
 
 onLoad(() => {
-  console.log("play====");
   // TODO: 自动播放
   // musicStore.play();
   // #ifdef H5

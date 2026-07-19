@@ -1,5 +1,5 @@
 export const SceneConfig = {
-  home: {
+  index: {
     route: "/pages/index/index",
     preload: ["guide"],
   },
@@ -9,6 +9,10 @@ export const SceneConfig = {
   },
   play: {
     route: "/pages/play/play",
+    preload: [],
+  },
+  playSecond: {
+    route: "/pages/play-second/play-second",
     preload: [],
   },
 };

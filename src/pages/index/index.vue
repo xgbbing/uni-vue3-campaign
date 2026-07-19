@@ -1,7 +1,6 @@
 <template>
   <view class="container">
     <!-- loading -->
-    <!-- <view v-if="loading" class="loading">加载中...</view> -->
     <up-loading-page
       v-if="loading"
       :loading="loading"
@@ -70,7 +69,6 @@ const goPlay = async () => {
     });
     return;
   }
-  await enter("guide");
   uni.navigateTo({
     url: "/pages/guide/guide",
   });
@@ -85,8 +83,7 @@ const goToPage = (page: string) => {
 
 // 页面初始化
 onLoad(async () => {
-  await enter("home");
-  console.log("=======vvvvvv");
+  await enter("index");
   loading.value = false;
 });
 </script>

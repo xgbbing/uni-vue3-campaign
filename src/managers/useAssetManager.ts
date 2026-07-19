@@ -60,7 +60,7 @@ export function useAssetManager() {
         console.error("图片资源错误:", asset.url, error);
         resolve(null);
       };
-      img.src = asset.url;
+      img.src = `${import.meta.env.BASE_URL}${asset.url}`;
     });
   }
 
@@ -76,7 +76,7 @@ export function useAssetManager() {
         console.error("视频资源错误:", asset.url, error);
         resolve(null);
       };
-      video.src = asset.url;
+      video.src = `${import.meta.env.BASE_URL}${asset.url}`;
       video.load();
     });
   }

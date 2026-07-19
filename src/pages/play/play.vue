@@ -1,41 +1,51 @@
 <template>
   <view class="page">
-    <!-- 背景 -->
-    <image
-      class="bg"
-      :src="success ? '/static/open-after.jpg' : '/static/open-before.jpg'"
-      mode="aspectFill"
-      @touchstart="onTouchStart"
-      @touchmove="onTouchMove"
-      @touchend="onTouchEnd"
-    />
+    <!-- loading -->
+    <up-loading-page
+      v-if="loading"
+      :loading="loading"
+      loading-text=""
+    ></up-loading-page>
 
-    <!-- 成功动画 -->
-    <image
-      v-if="success"
-      class="thumb"
-      src="/static/good.jpg"
-      mode="widthFix"
-    />
+    <view v-else>
+      <!-- 背景 -->
+      <image
+        class="bg"
+        :src="success ? '/static/open-after.jpg' : '/static/open-before.jpg'"
+        mode="aspectFill"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
+      />
 
-    <image
-      v-if="success"
-      class="next"
-      src="/static/guide-next.jpg"
-      @click="next"
-    />
+      <!-- 成功动画 -->
+      <image
+        v-if="success"
+        class="thumb"
+        src="/static/good.jpg"
+        mode="widthFix"
+      />
+
+      <image
+        v-if="success"
+        class="next"
+        src="/static/guide-next.jpg"
+        @click="next"
+      />
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import { useGestureUnlock } from "@/hooks/useGestureUnlock";
-import bgMusic from "@/static/bg-music.wav";
-import { useAudio } from "@/hooks/useAudio";
+import { useAudioManager } from "@/managers/useAudioManager";
+import { useSceneManager } from "@/managers/useSceneManager";
+import { onLoad } from "@dcloudio/uni-app";
 
 const success = ref(false);
 
-const { playMusic, pauseMusic } = useAudio({ bgMusic });
+const { playEffect, pauseEffect } = useAudioManager();
 
 const { onTouchStart, onTouchMove, onTouchEnd } = useGestureUnlock({
   area: {
@@ -50,12 +60,21 @@ const { onTouchStart, onTouchMove, onTouchEnd } = useGestureUnlock({
   strictArea: true,
   onSuccess() {
     success.value = true;
-    playMusic();
+    playEffect("static/bg-music.wav");
   },
 });
 
+const { enter } = useSceneManager();
+const loading = ref(true);
+
+// 页面初始化
+onLoad(async () => {
+  await enter("play");
+  loading.value = false;
+});
+
 const next = () => {
-  pauseMusic();
+  pauseEffect("static/bg-music.wav");
   uni.navigateTo({
     url: "/pages/play/play-second",
   });

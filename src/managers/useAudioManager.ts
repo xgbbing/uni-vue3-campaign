@@ -1,69 +1,132 @@
 import { ref } from "vue";
 
-const bgmSet = ref(new Map<string, any>());
-const currentBGM = ref<string | null>(null);
-const effectsSet = ref(new Map<string, any>());
+const bgmMap = new Map<string, HTMLAudioElement>();
+const activeBGM = ref<string | null>(null);
+const effectsMap = new Map<string, HTMLAudioElement>();
+let timer: any = null;
+const defaultUrl = `static/bg-music.wav`;
+
 export function useAudioManager() {
   /**
    * 播放背景音乐
    */
-  function playBGM(url: string) {
+  async function playBGM(url = defaultUrl as string) {
     // 当前播放音乐与新的播放音乐不一致时，停止当前播放音乐
-    if (currentBGM.value && currentBGM.value !== url) {
-      if (bgmSet.value.has(currentBGM.value)) {
-        bgmSet.value.get(currentBGM.value)?.pause();
-      }
+    if (activeBGM.value && activeBGM.value !== url) {
+      pauseBGM();
     }
-    // 当前播放音乐与新的播放音乐一致时，直接播放
-    if (currentBGM.value === url && bgmSet.value.has(url)) {
-      bgmSet.value.get(url)?.play();
+    if (bgmMap.has(url)) {
+      const audio = bgmMap.get(url);
+      if (audio) {
+        audio.volume = 1;
+        audio?.play();
+        activeBGM.value = url;
+      }
     } else {
-      loadBGM(url);
+      await loadBGM(url);
     }
-  }
-
-  function loadBGM(url: string) {
-    const audio = new Audio(url);
-    audio.loop = true;
-    audio.volume = 0;
-    audio.play();
-    // 淡入
-    let v = 0;
-    const timer = setInterval(() => {
-      v += 0.05;
-      audio.volume = v;
-      if (v >= 1) {
-        clearInterval(timer);
-      }
-    }, 500);
-    currentBGM.value = url;
-    bgmSet.value.set(url, audio);
   }
 
   /**
-   * 播放音效
+   * 加载背景音乐
    */
-  function playEffect(url: string) {
-    if (effectsSet.value.has(url)) {
-      effectsSet.value.get(url)?.play();
-    } else {
-      loadEffect(url);
-    }
-  }
+  async function loadBGM(url: string) {
+    const audio = new Audio();
+    audio.src = `${import.meta.env.BASE_URL}${url}`;
 
-  function loadEffect(url: string) {
-    const audio = new Audio(url);
-    audio.volume = 1;
-    audio.play();
-    effectsSet.value.set(url, audio);
+    return new Promise<void>((resolve, reject) => {
+      const onCanPlay = async () => {
+        try {
+          audio.loop = true;
+          audio.volume = 0;
+          await audio.play();
+          // 淡入
+          let v = 0;
+          timer = setInterval(() => {
+            v += 0.05;
+            if (v > 1) {
+              clearInterval(timer);
+            } else {
+              audio.volume = v;
+            }
+          }, 100);
+          activeBGM.value = url;
+          bgmMap.set(url, audio);
+          resolve();
+        } catch (err) {
+          reject(err);
+        } finally {
+          audio.removeEventListener("canplaythrough", onCanPlay);
+          audio.removeEventListener("error", onError);
+        }
+      };
+
+      const onError = () => {
+        reject(audio.error);
+        audio.removeEventListener("canplaythrough", onCanPlay);
+        audio.removeEventListener("error", onError);
+      };
+
+      audio.addEventListener("canplaythrough", onCanPlay);
+      audio.addEventListener("error", onError);
+    });
   }
 
   /**
    * 暂停背景音乐
    */
   function pauseBGM() {
-    if (currentBGM.value) {
-      bgmSet.value.get(currentBGM.value)?.pause();
+    if (timer.value) clearInterval(timer.value);
+    if (activeBGM.value) {
+      const audio = bgmMap.get(activeBGM.value);
+      audio?.pause();
+      activeBGM.value = null;
+    }
+  }
+
+  function destroyBGM(url: string) {
+    const audio = bgmMap.get(url);
+    if (audio) {
+      audio.pause();
+      audio.src = ""; // 释放内存
+      bgmMap.delete(url);
+    }
+  }
+
+  /**
+   * 播放音效
+   */
+  function playEffect(url: string) {
+    if (effectsMap.has(url)) {
+      effectsMap.get(url)?.play();
+    } else {
+      loadEffect(url);
+    }
+  }
+
+  function loadEffect(url: string) {
+    const audio = new Audio();
+    audio.src = `${import.meta.env.BASE_URL}${url}`;
+    audio.volume = 1;
+    audio.play();
+    effectsMap.set(url, audio);
+  }
+
+  /**
+   * 播放音效
+   */
+  function pauseEffect(url: string) {
+    if (effectsMap.has(url)) {
+      effectsMap.get(url)?.pause();
+    }
+  }
+
+  function destroyEffect(url: string) {
+    const audio = effectsMap.get(url);
+    if (audio) {
+      audio.pause();
+      audio.src = ""; // 释放内存
+      effectsMap.delete(url);
     }
   }
 
@@ -71,5 +134,9 @@ export function useAudioManager() {
     playBGM,
     pauseBGM,
     playEffect,
+    pauseEffect,
+    activeBGM,
+    destroyBGM,
+    destroyEffect,
   };
 }
