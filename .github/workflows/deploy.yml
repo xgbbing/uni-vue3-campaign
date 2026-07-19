@@ -20,6 +20,28 @@ jobs:
       # 拉取代码
       - uses: actions/checkout@v5
 
+      # 安装 Node
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      # 安装依赖
+      - name: Install dependencies
+        run: npm ci
+
+      # 检测代码
+      - name: Lint
+        run: npm run lint
+
+      # 类型检查
+      - name: Type Check
+        run: npm run typecheck
+
+      # 构建
+      - name: Build
+        run: npm run build:h5
+
       # 配置 SSH
       - name: Setup SSH
         run: |
@@ -29,7 +51,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
 
           cat >> ~/.ssh/config <<EOF
-          Host vps
+            Host vps
             HostName ${{ secrets.VPS_HOST }}
             User ${{ secrets.VPS_USER }}
             Port ${{ secrets.VPS_PORT }}
@@ -52,4 +74,3 @@ jobs:
             -e ssh \
             ${{ env.IMPORT_PATH }} \
             vps:${{ env.DEPLOY_PATH }}/
-       
