@@ -1,0 +1,1 @@
+import{p as a,e as s,c as e,i as t}from"./index-mme6V99Y.js";const c=a({},[["render",function(a,c){const i=t;return e(),s(i,{class:"dialog",src:"/webapp/uni-vue3-campaign/static/guide-chat1.jpg"})}],["__scopeId","data-v-07f10971"]]);export{c as default};
