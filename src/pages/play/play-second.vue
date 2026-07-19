@@ -304,25 +304,25 @@ function triggerSuccess() {
 }
 
 // ==================== 手势处理 ====================
-function getTouchPosition(touch) {
+function getTouchPosition(touch: any) {
   return {
     x: touch.clientX || touch.x || 0,
     y: touch.clientY || touch.y || 0,
   };
 }
 
-function getTouchDistance(touch1, touch2) {
+function getTouchDistance(touch1: any, touch2: any) {
   const dx = touch1.x - touch2.x;
   const dy = touch1.y - touch2.y;
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-function getTouchAngle(touch1, touch2) {
+function getTouchAngle(touch1: any, touch2: any) {
   // 计算两指连线的角度（弧度），范围[-π, π]
   return Math.atan2(touch2.y - touch1.y, touch2.x - touch1.x);
 }
 
-function getTouchCenter(touch1, touch2) {
+function getTouchCenter(touch1: any, touch2: any) {
   return {
     x: (touch1.x + touch2.x) / 2,
     y: (touch1.y + touch2.y) / 2,
@@ -469,7 +469,7 @@ function onTouchMove(e) {
   }
 }
 
-function onTouchEnd(e) {
+function onTouchEnd(e: any) {
   if (!gestureState.isActive) return;
 
   const touches = e.touches || [];
