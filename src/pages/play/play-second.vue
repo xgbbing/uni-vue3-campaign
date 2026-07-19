@@ -112,7 +112,7 @@ const showDebug = ref(true); // 是否显示调试面板（生产环境设为fal
 const { playEffect, pauseEffect } = useAudioManager();
 
 // ==================== 手势中间状态 ====================
-const gestureState = reactive({
+const gestureState = reactive<Record<string, any>>({
   isActive: false, // 是否有活跃手势
   initialTouchCount: 0, // 初始触摸点数量
   // 单指拖拽
@@ -329,7 +329,7 @@ function getTouchCenter(touch1: any, touch2: any) {
   };
 }
 
-function onTouchStart(e) {
+function onTouchStart(e: any) {
   if (isSuccess.value) {
     return;
   }
@@ -369,7 +369,7 @@ function onTouchStart(e) {
   }
 }
 
-function onTouchMove(e) {
+function onTouchMove(e: any) {
   if (!gestureState.isActive || isSuccess.value) return;
 
   const touches = e.touches || [];

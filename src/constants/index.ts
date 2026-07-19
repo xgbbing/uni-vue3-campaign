@@ -1,4 +1,4 @@
-const indexAssets = [
+const indexAssets: any[] = [
   {
     url: "./static/index-bg.jpg",
     type: "image",
