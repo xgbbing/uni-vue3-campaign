@@ -72,10 +72,10 @@
   },
   "vueVersion": "3",
   "h5": {
-    "publicPath": "/webapp/campaign-h5/",
+    "publicPath": "/webapp/uni-vue3-campaign/",
     "router": {
       "mode": "history",
-      "base": "/webapp/campaign-h5/"
+      "base": "/webapp/uni-vue3-campaign/"
     },
     "devServer": {
       "https": false

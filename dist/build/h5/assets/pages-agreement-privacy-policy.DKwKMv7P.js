@@ -1,0 +1,1 @@
+import{p as s,c as a,w as n,i as t,h as r,j as e,F as i}from"./index-D1edxMSo.js";const o=s({},[["render",function(s,o){const c=i,u=t;return r(),a(u,null,{default:n(()=>[e(c,{src:"https://xgbbing.win"})]),_:1})}]]);export{o as default};
