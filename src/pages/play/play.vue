@@ -1,51 +1,30 @@
 <template>
   <view class="page">
     <!-- loading -->
-    <up-loading-page
-      v-if="loading"
-      :loading="loading"
-      loading-text=""
-    ></up-loading-page>
+    <up-loading-page v-if="loading" :loading="loading" loading-text="" />
 
     <view v-else>
       <!-- 背景 -->
-      <image
-        class="bg"
-        :src="success ? '/static/open-after.jpg' : '/static/open-before.jpg'"
-        mode="aspectFill"
-        @touchstart="onTouchStart"
-        @touchmove="onTouchMove"
-        @touchend="onTouchEnd"
-      />
+      <image class="bg" :src="success ? '/static/open-after.jpg' : '/static/open-before.jpg'" mode="aspectFill" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd" />
 
       <!-- 成功动画 -->
-      <image
-        v-if="success"
-        class="thumb"
-        src="/static/good.jpg"
-        mode="widthFix"
-      />
+      <image v-if="success" class="thumb" src="/static/good.jpg" mode="widthFix" />
 
-      <image
-        v-if="success"
-        class="next"
-        src="/static/guide-next.jpg"
-        @click="next"
-      />
+      <image v-if="success" class="next" src="/static/guide-next.jpg" @click="next" />
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useGestureUnlock } from "@/hooks/useGestureUnlock";
-import { useAudioManager } from "@/managers/useAudioManager";
-import { useSceneManager } from "@/managers/useSceneManager";
-import { onLoad } from "@dcloudio/uni-app";
+import { ref } from 'vue'
+import { useGestureUnlock } from '@/hooks/useGestureUnlock'
+import { useAudioManager } from '@/managers/useAudioManager'
+import { useSceneManager } from '@/managers/useSceneManager'
+import { onLoad } from '@dcloudio/uni-app'
 
-const success = ref(false);
+const success = ref(false)
 
-const { playEffect, pauseEffect } = useAudioManager();
+const { playEffect, pauseEffect } = useAudioManager()
 
 const { onTouchStart, onTouchMove, onTouchEnd } = useGestureUnlock({
   area: {
@@ -54,31 +33,31 @@ const { onTouchStart, onTouchMove, onTouchEnd } = useGestureUnlock({
     width: 1 / 3,
     height: 1 / 3,
   },
-  direction: "right",
+  direction: 'right',
   distance: 40,
   tolerance: 40,
   strictArea: true,
   onSuccess() {
-    success.value = true;
-    playEffect("static/bg-music.wav");
+    success.value = true
+    playEffect('static/bg-music.wav')
   },
-});
+})
 
-const { enter } = useSceneManager();
-const loading = ref(true);
+const { enter } = useSceneManager()
+const loading = ref(true)
 
 // 页面初始化
 onLoad(async () => {
-  await enter("play");
-  loading.value = false;
-});
+  await enter('play')
+  loading.value = false
+})
 
 const next = () => {
-  pauseEffect("static/bg-music.wav");
+  pauseEffect('static/bg-music.wav')
   uni.navigateTo({
-    url: "/pages/play/play-second",
-  });
-};
+    url: '/pages/play/play-second',
+  })
+}
 </script>
 
 <style scoped lang="scss">

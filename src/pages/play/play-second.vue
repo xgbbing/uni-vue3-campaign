@@ -1,115 +1,82 @@
 <template>
   <view class="page-container">
     <!-- loading -->
-    <up-loading-page
-      v-if="loading"
-      :loading="loading"
-      loading-text=""
-    ></up-loading-page>
+    <up-loading-page v-if="loading" :loading="loading" loading-text="" />
 
     <view v-else>
       <!-- 背景 -->
       <image class="bg" src="/static/open-before.jpg" mode="aspectFill" />
 
       <!-- 调试控制按钮（仅 showDebug 为 true 时显示） -->
-      <view
-        class="debug-controls"
-        v-if="showDebug && !isSuccess"
-        @touchmove.stop.prevent
-      >
+      <view v-if="showDebug && !isSuccess" class="debug-controls" @touchmove.stop.prevent>
         <view class="control-row">
-          <view class="control-btn" @touchstart.stop="zoomIn">放大</view>
-          <view class="control-btn" @touchstart.stop="zoomOut">缩小</view>
+          <view class="control-btn" @touchstart.stop="zoomIn"> 放大 </view>
+          <view class="control-btn" @touchstart.stop="zoomOut"> 缩小 </view>
         </view>
         <view class="control-row">
-          <view class="control-btn" @touchstart.stop="rotateCW">顺时针</view>
-          <view class="control-btn" @touchstart.stop="rotateCCW">逆时针</view>
+          <view class="control-btn" @touchstart.stop="rotateCW"> 顺时针 </view>
+          <view class="control-btn" @touchstart.stop="rotateCCW"> 逆时针 </view>
         </view>
       </view>
 
       <!-- 可拖动的手机图片 -->
-      <view
-        class="draggable-phone"
-        :style="phoneStyle"
-        @touchstart="onTouchStart"
-        @touchmove.stop.prevent="onTouchMove"
-        @touchend="onTouchEnd"
-      >
+      <view class="draggable-phone" :style="phoneStyle" @touchstart="onTouchStart" @touchmove.stop.prevent="onTouchMove" @touchend="onTouchEnd">
         <image class="phone" src="/static/phone.png" mode="aspectFill" />
       </view>
 
       <!-- 调试信息（开发时使用，生产环境可删除） -->
-      <view class="debug-panel" v-if="showDebug && !isSuccess">
-        <text class="debug-text"
-          >偏移: X={{ Math.round(currentOffsetX) }}px Y={{
-            Math.round(currentOffsetY)
-          }}px</text
-        >
-        <text class="debug-text">缩放: {{ currentScale.toFixed(2) }}x</text>
-        <text class="debug-text">旋转: {{ currentRotation.toFixed(1) }}°</text>
-        <text class="debug-text"
-          >距目标: {{ distanceToTarget.toFixed(0) }}px | 角度:
-          {{ angleDiff.toFixed(1) }}°</text
-        >
-        <text class="debug-text">状态: {{ isSuccess ? "成功" : "偏离" }}</text>
+      <view v-if="showDebug && !isSuccess" class="debug-panel">
+        <text class="debug-text"> 偏移: X={{ Math.round(currentOffsetX) }}px Y={{ Math.round(currentOffsetY) }}px </text>
+        <text class="debug-text"> 缩放: {{ currentScale.toFixed(2) }}x </text>
+        <text class="debug-text"> 旋转: {{ currentRotation.toFixed(1) }}° </text>
+        <text class="debug-text"> 距目标: {{ distanceToTarget.toFixed(0) }}px | 角度: {{ angleDiff.toFixed(1) }}° </text>
+        <text class="debug-text"> 状态: {{ isSuccess ? '成功' : '偏离' }} </text>
       </view>
 
       <!-- 成功动画 -->
-      <image
-        v-if="isSuccess"
-        class="thumb"
-        src="/static/good.jpg"
-        mode="widthFix"
-      />
+      <image v-if="isSuccess" class="thumb" src="/static/good.jpg" mode="widthFix" />
 
       <!-- 下一步 -->
-      <image
-        v-if="isSuccess"
-        class="next"
-        src="/static/guide-next.jpg"
-        @click="next"
-      />
+      <image v-if="isSuccess" class="next" src="/static/guide-next.jpg" @click="next" />
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted, onUnmounted } from "vue";
-import { useAudioManager } from "@/managers/useAudioManager";
-import { useSceneManager } from "@/managers/useSceneManager";
-import { onLoad } from "@dcloudio/uni-app";
+import { ref, computed, reactive, onMounted, onUnmounted } from 'vue'
+import { useAudioManager } from '@/managers/useAudioManager'
+import { useSceneManager } from '@/managers/useSceneManager'
+import { onLoad } from '@dcloudio/uni-app'
 
 // ==================== 配置参数 ====================
-const successMusic = "static/bg-music.wav";
+const successMusic = 'static/bg-music.wav'
 // 手机图片尺寸（与镂空框一致）
-const PHONE_WIDTH = 200;
-const PHONE_HEIGHT = 200;
-const PHONE_SCALE = 1.7;
+const PHONE_SCALE = 1.7
 
 // 成功判定条件
-const POSITION_TOLERANCE_MIN = 5; // 最小位置容差：px
-const POSITION_TOLERANCE_MAX = 20; // 最大位置容差：px
-const ANGLE_TOLERANCE_MIN = -64; // 最小角度容差：度
-const ANGLE_TOLERANCE_MAX = -58; // 最大角度容差：度
-const SCALE_TOLERANCE = 0.2; // 缩放容差：0.2
+const POSITION_TOLERANCE_MIN = 5 // 最小位置容差：px
+const POSITION_TOLERANCE_MAX = 20 // 最大位置容差：px
+const ANGLE_TOLERANCE_MIN = -64 // 最小角度容差：度
+const ANGLE_TOLERANCE_MAX = -58 // 最大角度容差：度
+const SCALE_TOLERANCE = 0.2 // 缩放容差：0.2
 
 // 初始状态随机范围
-const INITIAL_SCALE_MIN = 0.5; // 缩小50%
-const INITIAL_SCALE_MAX = 1.5; // 放大150%
-const INITIAL_ROTATION_MIN = 60; // 最小旋转角度（正方向）
-const INITIAL_ROTATION_MAX = 90; // 最大旋转角度
-const INITIAL_OFFSET_DISTANCE = 100; // 初始偏移距离（px）
+const INITIAL_SCALE_MIN = 0.5 // 缩小50%
+const INITIAL_SCALE_MAX = 1.5 // 放大150%
+const INITIAL_ROTATION_MIN = 60 // 最小旋转角度（正方向）
+const INITIAL_ROTATION_MAX = 90 // 最大旋转角度
+const INITIAL_OFFSET_DISTANCE = 100 // 初始偏移距离（px）
 
 // ==================== 响应式状态 ====================
-const currentOffsetX = ref(0); // 当前X偏移（相对正确位置）
-const currentOffsetY = ref(0); // 当前Y偏移（相对正确位置）
-const currentScale = ref(1); // 当前缩放
-const currentRotation = ref(0); // 当前旋转角度（度）
+const currentOffsetX = ref(0) // 当前X偏移（相对正确位置）
+const currentOffsetY = ref(0) // 当前Y偏移（相对正确位置）
+const currentScale = ref(1) // 当前缩放
+const currentRotation = ref(0) // 当前旋转角度（度）
 
-const isSuccess = ref(false); // 是否已成功
-const showDebug = ref(true); // 是否显示调试面板（生产环境设为false）
+const isSuccess = ref(false) // 是否已成功
+const showDebug = ref(true) // 是否显示调试面板（生产环境设为false）
 
-const { playEffect, pauseEffect } = useAudioManager();
+const { playEffect, pauseEffect } = useAudioManager()
 
 // ==================== 手势中间状态 ====================
 const gestureState = reactive<Record<string, any>>({
@@ -132,55 +99,50 @@ const gestureState = reactive<Record<string, any>>({
   // 当前触摸点追踪
   currentTouchIds: new Set(),
   isMultiTouch: false,
-});
+})
 
 // ==================== 计算属性 ====================
 // 手机图片的transform样式
 const phoneStyle = computed(() => {
-  const tx = currentOffsetX.value;
-  const ty = currentOffsetY.value;
-  const s = currentScale.value;
-  const r = currentRotation.value;
+  const tx = currentOffsetX.value
+  const ty = currentOffsetY.value
+  const s = currentScale.value
+  const r = currentRotation.value
 
   return {
     transform: `translate(${tx}px, ${ty}px) scale(${s}) rotate(${r}deg)`,
-    transition: gestureState.isActive
-      ? "none"
-      : "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-  };
-});
+    transition: gestureState.isActive ? 'none' : 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+  }
+})
 
 // 距离目标位置的像素距离
 const distanceToTarget = computed(() => {
-  return Math.sqrt(currentOffsetX.value ** 2 + currentOffsetY.value ** 2);
-});
+  return Math.sqrt(currentOffsetX.value ** 2 + currentOffsetY.value ** 2)
+})
 
 // 角度偏差
 const angleDiff = computed(() => {
-  return (currentRotation.value % 360) - ANGLE_TOLERANCE_MAX;
-});
+  return (currentRotation.value % 360) - ANGLE_TOLERANCE_MAX
+})
 
 // ==================== 初始化 ====================
 
-const { enter } = useSceneManager();
-const loading = ref(true);
+const { enter } = useSceneManager()
+const loading = ref(true)
 
 // 页面初始化
 onLoad(async () => {
-  await enter("play");
-  loading.value = false;
-});
+  await enter('play')
+  loading.value = false
+})
 function generateInitialState() {
   // 随机缩放：0.5 ~ 1.5
-  const scale =
-    INITIAL_SCALE_MIN + Math.random() * (INITIAL_SCALE_MAX - INITIAL_SCALE_MIN);
+  const scale = INITIAL_SCALE_MIN + Math.random() * (INITIAL_SCALE_MAX - INITIAL_SCALE_MIN)
 
   // 随机旋转：60~90度 或 -60~-90度
-  const rotationMagnitude =
-    INITIAL_ROTATION_MIN +
-    Math.random() * (INITIAL_ROTATION_MAX - INITIAL_ROTATION_MIN);
-  const rotationSign = Math.random() > 0.5 ? 1 : -1;
-  const rotation = rotationMagnitude * rotationSign;
+  const rotationMagnitude = INITIAL_ROTATION_MIN + Math.random() * (INITIAL_ROTATION_MAX - INITIAL_ROTATION_MIN)
+  const rotationSign = Math.random() > 0.5 ? 1 : -1
+  const rotation = rotationMagnitude * rotationSign
 
   // 随机偏移方向：上下左右
   const directions = [
@@ -200,87 +162,77 @@ function generateInitialState() {
       x: INITIAL_OFFSET_DISTANCE,
       y: 0,
     }, // 右
-  ];
-  const dir = directions[Math.floor(Math.random() * directions.length)];
+  ]
+  const dir = directions[Math.floor(Math.random() * directions.length)]
 
   // 添加一些随机性到偏移量（±20px）
-  const offsetX = dir.x + (Math.random() - 0.5) * 40;
-  const offsetY = dir.y + (Math.random() - 0.5) * 40;
+  const offsetX = dir.x + (Math.random() - 0.5) * 40
+  const offsetY = dir.y + (Math.random() - 0.5) * 40
 
   return {
     scale,
     rotation,
     offsetX,
     offsetY,
-  };
+  }
 }
 
 function applyInitialState() {
-  const state = generateInitialState();
-  currentScale.value = state.scale;
-  currentRotation.value = state.rotation;
-  currentOffsetX.value = state.offsetX;
-  currentOffsetY.value = state.offsetY;
-  isSuccess.value = false;
-  console.log("初始状态:", {
-    scale: state.scale.toFixed(2),
-    rotation: state.rotation.toFixed(1) + "°",
-    offsetX: state.offsetX.toFixed(0) + "px",
-    offsetY: state.offsetY.toFixed(0) + "px",
-  });
+  const state = generateInitialState()
+  currentScale.value = state.scale
+  currentRotation.value = state.rotation
+  currentOffsetX.value = state.offsetX
+  currentOffsetY.value = state.offsetY
+  isSuccess.value = false
+  // console.log('初始状态:', {
+  //   scale: state.scale.toFixed(2),
+  //   rotation: state.rotation.toFixed(1) + '°',
+  //   offsetX: state.offsetX.toFixed(0) + 'px',
+  //   offsetY: state.offsetY.toFixed(0) + 'px',
+  // })
 }
 
 // ==================== 调试按钮方法 ====================
 function zoomIn() {
-  if (isSuccess.value) return;
-  currentScale.value = Math.min(2.5, currentScale.value + 0.1);
-  checkSuccess();
+  if (isSuccess.value) return
+  currentScale.value = Math.min(2.5, currentScale.value + 0.1)
+  checkSuccess()
 }
 
 function zoomOut() {
-  if (isSuccess.value) return;
-  currentScale.value = Math.max(0.3, currentScale.value - 0.1);
-  checkSuccess();
+  if (isSuccess.value) return
+  currentScale.value = Math.max(0.3, currentScale.value - 0.1)
+  checkSuccess()
 }
 
 function rotateCW() {
-  if (isSuccess.value) return;
-  currentRotation.value += 2;
-  checkSuccess();
+  if (isSuccess.value) return
+  currentRotation.value += 2
+  checkSuccess()
 }
 
 function rotateCCW() {
-  if (isSuccess.value) return;
-  currentRotation.value -= 2;
-  checkSuccess();
+  if (isSuccess.value) return
+  currentRotation.value -= 2
+  checkSuccess()
 }
 
 // ==================== 成功检测 ====================
 function checkSuccess() {
-  console.log(distanceToTarget.value, "===distanceToTarget.value");
-  console.log(currentRotation.value, "===currentRotation.value");
-  console.log(currentScale.value % 360, "===currentScale.value");
-  const distOk =
-    distanceToTarget.value <= POSITION_TOLERANCE_MAX &&
-    distanceToTarget.value >= POSITION_TOLERANCE_MIN;
-  const angleOk =
-    currentRotation.value % 360 <= ANGLE_TOLERANCE_MAX &&
-    currentRotation.value % 360 >= ANGLE_TOLERANCE_MIN;
-  const scaleOk = Math.abs(currentScale.value - PHONE_SCALE) <= SCALE_TOLERANCE;
+  const distOk = distanceToTarget.value <= POSITION_TOLERANCE_MAX && distanceToTarget.value >= POSITION_TOLERANCE_MIN
+  const angleOk = currentRotation.value % 360 <= ANGLE_TOLERANCE_MAX && currentRotation.value % 360 >= ANGLE_TOLERANCE_MIN
+  const scaleOk = Math.abs(currentScale.value - PHONE_SCALE) <= SCALE_TOLERANCE
 
-  console.log(distOk, "===distOk");
-  console.log(angleOk, "===angleOk");
-  console.log(scaleOk, "===scaleOk");
   if (distOk && angleOk && scaleOk) {
-    triggerSuccess();
-    return true;
+    triggerSuccess()
+    return true
   }
-  return false;
+  return false
 }
 
 function triggerSuccess() {
-  if (isSuccess.value) return;
-  isSuccess.value = true;
+  if (isSuccess.value) return
+  isSuccess.value = true
 
   // 吸附到正确位置
   // currentOffsetX.value = 0
@@ -292,15 +244,15 @@ function triggerSuccess() {
   if (uni.vibrateShort) {
     try {
       uni.vibrateShort({
-        type: "medium",
-      });
+        type: 'medium',
+      })
     } catch (e) {
       // 忽略不支持的情况
+      console.warn('设备不支持震动:', e)
     }
   }
 
-  console.log("✅ 成功！图片已归位");
-  playEffect(successMusic);
+  playEffect(successMusic)
 }
 
 // ==================== 手势处理 ====================
@@ -308,233 +260,220 @@ function getTouchPosition(touch: any) {
   return {
     x: touch.clientX || touch.x || 0,
     y: touch.clientY || touch.y || 0,
-  };
+  }
 }
 
 function getTouchDistance(touch1: any, touch2: any) {
-  const dx = touch1.x - touch2.x;
-  const dy = touch1.y - touch2.y;
-  return Math.sqrt(dx * dx + dy * dy);
+  const dx = touch1.x - touch2.x
+  const dy = touch1.y - touch2.y
+  return Math.sqrt(dx * dx + dy * dy)
 }
 
 function getTouchAngle(touch1: any, touch2: any) {
   // 计算两指连线的角度（弧度），范围[-π, π]
-  return Math.atan2(touch2.y - touch1.y, touch2.x - touch1.x);
+  return Math.atan2(touch2.y - touch1.y, touch2.x - touch1.x)
 }
 
 function getTouchCenter(touch1: any, touch2: any) {
   return {
     x: (touch1.x + touch2.x) / 2,
     y: (touch1.y + touch2.y) / 2,
-  };
+  }
 }
 
 function onTouchStart(e: any) {
   if (isSuccess.value) {
-    return;
+    return
   }
 
-  const touches = e.touches || [];
-  gestureState.isActive = true;
-  gestureState.initialTouchCount = touches.length;
+  const touches = e.touches || []
+  gestureState.isActive = true
+  gestureState.initialTouchCount = touches.length
 
   // 更新触摸点追踪
-  gestureState.currentTouchIds.clear();
+  gestureState.currentTouchIds.clear()
   for (const t of touches) {
-    gestureState.currentTouchIds.add(t.identifier || 0);
+    gestureState.currentTouchIds.add(t.identifier || 0)
   }
 
   if (touches.length === 1) {
     // 单指拖拽开始
-    const pos = getTouchPosition(touches[0]);
-    gestureState.lastSingleX = pos.x;
-    gestureState.lastSingleY = pos.y;
-    gestureState.dragStartOffsetX = currentOffsetX.value;
-    gestureState.dragStartOffsetY = currentOffsetY.value;
-    gestureState.isMultiTouch = false;
+    const pos = getTouchPosition(touches[0])
+    gestureState.lastSingleX = pos.x
+    gestureState.lastSingleY = pos.y
+    gestureState.dragStartOffsetX = currentOffsetX.value
+    gestureState.dragStartOffsetY = currentOffsetY.value
+    gestureState.isMultiTouch = false
   } else if (touches.length >= 2) {
     // 双指操作开始
-    const t1 = getTouchPosition(touches[0]);
-    const t2 = getTouchPosition(touches[1]);
-    gestureState.lastPinchDistance = getTouchDistance(t1, t2);
-    gestureState.lastPinchAngle = getTouchAngle(t1, t2);
-    const center = getTouchCenter(t1, t2);
-    gestureState.lastPinchCenterX = center.x;
-    gestureState.lastPinchCenterY = center.y;
-    gestureState.pinchStartScale = currentScale.value;
-    gestureState.pinchStartRotation = currentRotation.value;
-    gestureState.pinchStartOffsetX = currentOffsetX.value;
-    gestureState.pinchStartOffsetY = currentOffsetY.value;
-    gestureState.isMultiTouch = true;
+    const t1 = getTouchPosition(touches[0])
+    const t2 = getTouchPosition(touches[1])
+    gestureState.lastPinchDistance = getTouchDistance(t1, t2)
+    gestureState.lastPinchAngle = getTouchAngle(t1, t2)
+    const center = getTouchCenter(t1, t2)
+    gestureState.lastPinchCenterX = center.x
+    gestureState.lastPinchCenterY = center.y
+    gestureState.pinchStartScale = currentScale.value
+    gestureState.pinchStartRotation = currentRotation.value
+    gestureState.pinchStartOffsetX = currentOffsetX.value
+    gestureState.pinchStartOffsetY = currentOffsetY.value
+    gestureState.isMultiTouch = true
   }
 }
 
 function onTouchMove(e: any) {
-  if (!gestureState.isActive || isSuccess.value) return;
+  if (!gestureState.isActive || isSuccess.value) return
 
-  const touches = e.touches || [];
+  const touches = e.touches || []
 
   // 更新触摸点追踪
-  const newTouchIds = new Set();
+  const newTouchIds = new Set()
   for (const t of touches) {
-    newTouchIds.add(t.identifier || 0);
+    newTouchIds.add(t.identifier || 0)
   }
 
   // 检测是否从单指变为双指（或反之）
   if (touches.length >= 2 && !gestureState.isMultiTouch) {
     // 从单指切换到双指，重新初始化双指状态
-    const t1 = getTouchPosition(touches[0]);
-    const t2 = getTouchPosition(touches[1]);
-    gestureState.lastPinchDistance = getTouchDistance(t1, t2);
-    gestureState.lastPinchAngle = getTouchAngle(t1, t2);
-    const center = getTouchCenter(t1, t2);
-    gestureState.lastPinchCenterX = center.x;
-    gestureState.lastPinchCenterY = center.y;
-    gestureState.pinchStartScale = currentScale.value;
-    gestureState.pinchStartRotation = currentRotation.value;
-    gestureState.pinchStartOffsetX = currentOffsetX.value;
-    gestureState.pinchStartOffsetY = currentOffsetY.value;
-    gestureState.isMultiTouch = true;
-    gestureState.currentTouchIds = newTouchIds;
-    return;
+    const t1 = getTouchPosition(touches[0])
+    const t2 = getTouchPosition(touches[1])
+    gestureState.lastPinchDistance = getTouchDistance(t1, t2)
+    gestureState.lastPinchAngle = getTouchAngle(t1, t2)
+    const center = getTouchCenter(t1, t2)
+    gestureState.lastPinchCenterX = center.x
+    gestureState.lastPinchCenterY = center.y
+    gestureState.pinchStartScale = currentScale.value
+    gestureState.pinchStartRotation = currentRotation.value
+    gestureState.pinchStartOffsetX = currentOffsetX.value
+    gestureState.pinchStartOffsetY = currentOffsetY.value
+    gestureState.isMultiTouch = true
+    gestureState.currentTouchIds = newTouchIds
+    return
   }
 
   if (touches.length === 1 && gestureState.isMultiTouch) {
     // 从双指变为单指，切换到单指拖拽模式
-    const pos = getTouchPosition(touches[0]);
-    gestureState.lastSingleX = pos.x;
-    gestureState.lastSingleY = pos.y;
-    gestureState.dragStartOffsetX = currentOffsetX.value;
-    gestureState.dragStartOffsetY = currentOffsetY.value;
-    gestureState.isMultiTouch = false;
-    gestureState.currentTouchIds = newTouchIds;
-    return;
+    const pos = getTouchPosition(touches[0])
+    gestureState.lastSingleX = pos.x
+    gestureState.lastSingleY = pos.y
+    gestureState.dragStartOffsetX = currentOffsetX.value
+    gestureState.dragStartOffsetY = currentOffsetY.value
+    gestureState.isMultiTouch = false
+    gestureState.currentTouchIds = newTouchIds
+    return
   }
 
-  gestureState.currentTouchIds = newTouchIds;
+  gestureState.currentTouchIds = newTouchIds
 
   if (touches.length === 1 && !gestureState.isMultiTouch) {
     // 单指拖拽
-    const pos = getTouchPosition(touches[0]);
-    const deltaX = pos.x - gestureState.lastSingleX;
-    const deltaY = pos.y - gestureState.lastSingleY;
+    const pos = getTouchPosition(touches[0])
+    const deltaX = pos.x - gestureState.lastSingleX
+    const deltaY = pos.y - gestureState.lastSingleY
 
-    currentOffsetX.value += deltaX;
-    currentOffsetY.value += deltaY;
+    currentOffsetX.value += deltaX
+    currentOffsetY.value += deltaY
 
-    gestureState.lastSingleX = pos.x;
-    gestureState.lastSingleY = pos.y;
+    gestureState.lastSingleX = pos.x
+    gestureState.lastSingleY = pos.y
   } else if (touches.length >= 2) {
     // 双指操作：缩放 + 旋转 + 平移
-    const t1 = getTouchPosition(touches[0]);
-    const t2 = getTouchPosition(touches[1]);
+    const t1 = getTouchPosition(touches[0])
+    const t2 = getTouchPosition(touches[1])
 
     // 计算缩放变化
-    const currentDistance = getTouchDistance(t1, t2);
+    const currentDistance = getTouchDistance(t1, t2)
     if (gestureState.lastPinchDistance > 0) {
-      const scaleDelta = currentDistance / gestureState.lastPinchDistance;
-      const newScale = currentScale.value * scaleDelta;
+      const scaleDelta = currentDistance / gestureState.lastPinchDistance
+      const newScale = currentScale.value * scaleDelta
       // 限制缩放范围
-      currentScale.value = Math.max(0.3, Math.min(2.5, newScale));
+      currentScale.value = Math.max(0.3, Math.min(2.5, newScale))
     }
 
     // 计算旋转变化
-    const currentAngle = getTouchAngle(t1, t2);
-    if (
-      gestureState.lastPinchAngle !== undefined &&
-      gestureState.lastPinchDistance > 10
-    ) {
-      let angleDelta =
-        (currentAngle - gestureState.lastPinchAngle) * (180 / Math.PI);
+    const currentAngle = getTouchAngle(t1, t2)
+    if (gestureState.lastPinchAngle !== undefined && gestureState.lastPinchDistance > 10) {
+      let angleDelta = (currentAngle - gestureState.lastPinchAngle) * (180 / Math.PI)
       // 处理角度跨越±π的情况
-      if (angleDelta > 180) angleDelta -= 360;
-      if (angleDelta < -180) angleDelta += 360;
-      currentRotation.value += angleDelta;
+      if (angleDelta > 180) angleDelta -= 360
+      if (angleDelta < -180) angleDelta += 360
+      currentRotation.value += angleDelta
     }
 
     // 计算双指中心移动（平移）
-    const currentCenter = getTouchCenter(t1, t2);
+    const currentCenter = getTouchCenter(t1, t2)
     if (gestureState.lastPinchCenterX !== undefined) {
-      const centerDeltaX = currentCenter.x - gestureState.lastPinchCenterX;
-      const centerDeltaY = currentCenter.y - gestureState.lastPinchCenterY;
-      currentOffsetX.value += centerDeltaX;
-      currentOffsetY.value += centerDeltaY;
+      const centerDeltaX = currentCenter.x - gestureState.lastPinchCenterX
+      const centerDeltaY = currentCenter.y - gestureState.lastPinchCenterY
+      currentOffsetX.value += centerDeltaX
+      currentOffsetY.value += centerDeltaY
     }
 
     // 更新双指记录
-    gestureState.lastPinchDistance = currentDistance;
-    gestureState.lastPinchAngle = currentAngle;
-    gestureState.lastPinchCenterX = currentCenter.x;
-    gestureState.lastPinchCenterY = currentCenter.y;
+    gestureState.lastPinchDistance = currentDistance
+    gestureState.lastPinchAngle = currentAngle
+    gestureState.lastPinchCenterX = currentCenter.x
+    gestureState.lastPinchCenterY = currentCenter.y
   }
 }
 
 function onTouchEnd(e: any) {
-  if (!gestureState.isActive) return;
+  if (!gestureState.isActive) return
 
-  const touches = e.touches || [];
+  const touches = e.touches || []
 
   if (touches.length === 0) {
     // 所有手指都离开了
-    gestureState.isActive = false;
-    gestureState.isMultiTouch = false;
-    gestureState.lastPinchDistance = 0;
-    gestureState.lastPinchAngle = undefined;
-    gestureState.lastPinchCenterX = undefined;
-    gestureState.lastPinchCenterY = undefined;
-    gestureState.currentTouchIds.clear();
+    gestureState.isActive = false
+    gestureState.isMultiTouch = false
+    gestureState.lastPinchDistance = 0
+    gestureState.lastPinchAngle = undefined
+    gestureState.lastPinchCenterX = undefined
+    gestureState.lastPinchCenterY = undefined
+    gestureState.currentTouchIds.clear()
 
     // 检查是否成功
     if (!isSuccess.value) {
       // 添加小延迟，等待过渡动画完成后再检测
       setTimeout(() => {
-        checkSuccess();
-      }, 100);
+        checkSuccess()
+      }, 100)
     }
   } else if (touches.length === 1 && gestureState.isMultiTouch) {
     // 从双指变为单指
-    const pos = getTouchPosition(touches[0]);
-    gestureState.lastSingleX = pos.x;
-    gestureState.lastSingleY = pos.y;
-    gestureState.dragStartOffsetX = currentOffsetX.value;
-    gestureState.dragStartOffsetY = currentOffsetY.value;
-    gestureState.isMultiTouch = false;
-    gestureState.lastPinchDistance = 0;
-    gestureState.lastPinchAngle = undefined;
+    const pos = getTouchPosition(touches[0])
+    gestureState.lastSingleX = pos.x
+    gestureState.lastSingleY = pos.y
+    gestureState.dragStartOffsetX = currentOffsetX.value
+    gestureState.dragStartOffsetY = currentOffsetY.value
+    gestureState.isMultiTouch = false
+    gestureState.lastPinchDistance = 0
+    gestureState.lastPinchAngle = undefined
   }
 }
 
 function next() {
-  pauseEffect(successMusic);
+  pauseEffect(successMusic)
 }
 
 // ==================== 生命周期 ====================
 onMounted(() => {
   // 应用初始随机状态
-  applyInitialState();
+  applyInitialState()
 
   // H5端禁用页面滚动
   // #ifdef H5
-  document.body.style.overflow = "hidden";
-  document.body.style.touchAction = "none";
+  document.body.style.overflow = 'hidden'
+  document.body.style.touchAction = 'none'
   // #endif
-
-  console.log("📱 手机图片校准页面已就绪");
-  console.log("  - 单指拖拽移动图片");
-  console.log("  - 双指缩放旋转图片");
-  console.log("  - 将图片对准镂空框即可");
-  console.log("  - 位置容差:", POSITION_TOLERANCE_MAX, "px");
-  console.log("  - 角度容差:", ANGLE_TOLERANCE_MAX, "°");
-  console.log("  - 角度容差:", ANGLE_TOLERANCE_MIN, "°");
-  console.log("  - 缩放容差: ±", SCALE_TOLERANCE);
-});
+})
 
 onUnmounted(() => {
   // #ifdef H5
-  document.body.style.overflow = "";
-  document.body.style.touchAction = "";
+  document.body.style.overflow = ''
+  document.body.style.touchAction = ''
   // #endif
-});
+})
 </script>
 
 <style scoped lang="scss">
@@ -662,7 +601,7 @@ onUnmounted(() => {
 .debug-text {
   color: #0f0;
   font-size: 10px;
-  font-family: "Courier New", monospace;
+  font-family: 'Courier New', monospace;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

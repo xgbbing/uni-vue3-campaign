@@ -1,28 +1,26 @@
 <template>
-	<view v-if="visible" class="popup-mask" @touchmove.stop.prevent @click="close">
-		<view class="popup-container" @click.stop>
-			<!-- 背景图片（装饰框） -->
-			<image class="popup-bg" src="/static/rules-bg.jpg" mode="aspectFit" />
-			<!-- 滚动内容 -->
-			<scroll-view class="popup-content" scroll-y>
-				<view class="content-inner" v-html="rulesHtml"></view>
-			</scroll-view>
-		</view>
-	</view>
+  <view v-if="visible" class="popup-mask" @touchmove.stop.prevent @click="close">
+    <view class="popup-container" @click.stop>
+      <!-- 背景图片（装饰框） -->
+      <image class="popup-bg" src="/static/rules-bg.jpg" mode="aspectFit" />
+      <!-- 滚动内容 -->
+      <scroll-view class="popup-content" scroll-y>
+        <view v-dompurify-html="rulesHtml" class="content-inner" />
+      </scroll-view>
+    </view>
+  </view>
 </template>
 
 <script setup lang="ts">
-	import {
-		ref,
-	} from 'vue';
+import { ref } from 'vue'
 
-	const props = defineProps({
-		visible: Boolean
-	});
-	const emit = defineEmits(['update:visible']);
+defineProps({
+  visible: Boolean,
+})
+const emit = defineEmits(['update:visible'])
 
-	// 活动规则 HTML 内容（可直接从后端获取，或写死）
-	const rulesHtml = ref(`
+// 活动规则 HTML 内容（可直接从后端获取，或写死）
+const rulesHtml = ref(`
   <div style="font-size: 28rpx; color: #333; line-height: 1.8;">
     <p style="font-weight: bold; text-align: center; font-size: 32rpx;">《巧扫码，趣成长》互动抽奖活动</p>
     <p>活动期间，用户可通过美素佳儿公众号、美素佳儿美妈汇小程序平台及其他推广渠道，进入【巧扫码，趣成长】互动H5，成为美素佳儿注册会员可参与游戏互动。请您仔细阅读以下活动规则，参与即视为同意本规则全部条款。</p>
@@ -47,67 +45,67 @@
     <p>b.一等奖：贵雪美高超大积木感官系列非洲动物盲装，价值99元，共60份</p>
     <p>c.二等奖：50奶滴值共1500份、100奶滴值共200份、200奶滴值共100份，随机发放，内含50/100/200奶滴值不等。奶滴值共计1800份，每2固限量1000份，先到先得。</p>
   </div>
-`);
+`)
 
-	const close = () => {
-		emit('update:visible', false);
-	};
+const close = () => {
+  emit('update:visible', false)
+}
 </script>
 
 <style lang="scss" scoped>
-	.popup-mask {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: rgba(0, 0, 0, 0.6);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 999;
-	}
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
 
-	.popup-container {
-		position: relative;
-		width: 70%;
-		/* 根据图片比例调整高度，例如使用 aspect-ratio 或固定高度 */
-		aspect-ratio: 438 / 872;
-		/* 假设图片宽高比，需替换为实际比例 */
-		max-height: 77vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+.popup-container {
+  position: relative;
+  width: 70%;
+  /* 根据图片比例调整高度，例如使用 aspect-ratio 或固定高度 */
+  aspect-ratio: 438 / 872;
+  /* 假设图片宽高比，需替换为实际比例 */
+  max-height: 77vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-	.popup-bg {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		/* mode="aspectFit" 保持比例，居中显示 */
-	}
+.popup-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* mode="aspectFit" 保持比例，居中显示 */
+}
 
-	.popup-content {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		padding: 23% 5% 8%;
-		/* 上、左右、下，根据图片框位置调整 */
-		box-sizing: border-box;
-		overflow-y: auto;
+.popup-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 23% 5% 8%;
+  /* 上、左右、下，根据图片框位置调整 */
+  box-sizing: border-box;
+  overflow-y: auto;
 
-		/* 隐藏滚动条（微信小程序） */
-		&::-webkit-scrollbar {
-			width: 0;
-			height: 0;
-		}
-	}
+  /* 隐藏滚动条（微信小程序） */
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
 
-	.content-inner {
-		font-size: 24rpx;
-		color: #333;
-		line-height: 1.8;
-	}
+.content-inner {
+  font-size: 24rpx;
+  color: #333;
+  line-height: 1.8;
+}
 </style>

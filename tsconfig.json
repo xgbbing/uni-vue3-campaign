@@ -16,8 +16,10 @@
     "types": [
       "@dcloudio/types",
       "node",
-      "uview-plus/types"
-    ]
+      "uview-plus/types",
+      "miniprogram-api-typings",
+      "@uni-helper/uni-app-types"
+    ],
   },
   "include": [
     "src/**/*.ts",

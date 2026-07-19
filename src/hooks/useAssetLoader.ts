@@ -1,58 +1,58 @@
-import { ref, computed } from "vue";
+import { ref, computed } from 'vue'
 
-type AssetType = "image" | "audio" | "video";
+type AssetType = 'image' | 'audio' | 'video'
 export interface AssetItem {
-  url: string;
-  type: AssetType;
-  priority?: "high" | "normal" | "low";
+  url: string
+  type: AssetType
+  priority?: 'high' | 'normal' | 'low'
   /**
    * 重试次数
    */
-  retry?: number;
+  retry?: number
 }
 
 export function useAssetLoader(options?: {
   /**
    * 最大并发数
    */
-  concurrency?: number;
+  concurrency?: number
 }) {
-  const concurrency = options?.concurrency ?? 4;
+  const concurrency = options?.concurrency ?? 4
 
   // 总资源数量
-  const total = ref(0);
+  const total = ref(0)
   // 已完成数量
-  const loaded = ref(0);
+  const loaded = ref(0)
   // 是否加载完成
-  const loading = ref(false);
-  const errors = ref<string[]>([]);
+  const loading = ref(false)
+  const errors = ref<string[]>([])
 
-  const cache = new Set<string>();
+  const cache = new Set<string>()
 
   /**
    * 加载进度
    */
   const progress = computed(() => {
     if (!total.value) {
-      return 100;
+      return 100
     }
-    return Math.floor((loaded.value / total.value) * 100);
-  });
+    return Math.floor((loaded.value / total.value) * 100)
+  })
 
   /**
    * 图片加载
    */
   function loadImage(url: string) {
     return new Promise<void>((resolve, reject) => {
-      const img = new Image();
+      const img = new Image()
       img.onload = () => {
-        resolve();
-      };
+        resolve()
+      }
       img.onerror = () => {
-        reject(new Error(`图片加载失败:${url}`));
-      };
-      img.src = url;
-    });
+        reject(new Error(`图片加载失败:${url}`))
+      }
+      img.src = url
+    })
   }
 
   /**
@@ -60,17 +60,17 @@ export function useAssetLoader(options?: {
    */
   function loadAudio(url: string) {
     return new Promise<void>((resolve, reject) => {
-      const audio = new Audio();
-      audio.preload = "auto";
+      const audio = new Audio()
+      audio.preload = 'auto'
       audio.oncanplaythrough = () => {
-        resolve();
-      };
+        resolve()
+      }
       audio.onerror = () => {
-        reject(new Error(`音频加载失败:${url}`));
-      };
-      audio.src = url;
-      audio.load();
-    });
+        reject(new Error(`音频加载失败:${url}`))
+      }
+      audio.src = url
+      audio.load()
+    })
   }
 
   /**
@@ -78,17 +78,17 @@ export function useAssetLoader(options?: {
    */
   function loadVideo(url: string) {
     return new Promise<void>((resolve, reject) => {
-      const video = document.createElement("video");
-      video.preload = "metadata";
+      const video = document.createElement('video')
+      video.preload = 'metadata'
       video.onloadedmetadata = () => {
-        resolve();
-      };
+        resolve()
+      }
       video.onerror = () => {
-        reject(new Error(`视频加载失败:${url}`));
-      };
-      video.src = url;
-      video.load();
-    });
+        reject(new Error(`视频加载失败:${url}`))
+      }
+      video.src = url
+      video.load()
+    })
   }
 
   /**
@@ -102,28 +102,28 @@ export function useAssetLoader(options?: {
      * 已缓存
      */
     if (cache.has(asset.url)) {
-      return;
+      return
     }
-    let retry = asset.retry ?? 2;
+    let retry = asset.retry ?? 2
     while (retry >= 0) {
       try {
         switch (asset.type) {
-          case "image":
-            await loadImage(asset.url);
-            break;
-          case "audio":
-            await loadAudio(asset.url);
-            break;
-          case "video":
-            await loadVideo(asset.url);
-            break;
+          case 'image':
+            await loadImage(asset.url)
+            break
+          case 'audio':
+            await loadAudio(asset.url)
+            break
+          case 'video':
+            await loadVideo(asset.url)
+            break
         }
-        cache.add(asset.url);
-        return;
+        cache.add(asset.url)
+        return
       } catch (e) {
-        retry--;
+        retry--
         if (retry < 0) {
-          throw e;
+          throw e
         }
       }
     }
@@ -136,18 +136,18 @@ export function useAssetLoader(options?: {
    */
 
   async function runQueue(assets: AssetItem[]) {
-    let index = 0;
+    let index = 0
 
     async function worker() {
       while (index < assets.length) {
-        const current = assets[index++];
+        const current = assets[index++]
 
         try {
-          await loadOne(current);
+          await loadOne(current)
         } catch {
-          errors.value.push(current.url);
+          errors.value.push(current.url)
         } finally {
-          loaded.value++;
+          loaded.value++
         }
       }
     }
@@ -156,10 +156,10 @@ export function useAssetLoader(options?: {
       {
         length: concurrency,
       },
-      worker,
-    );
+      worker
+    )
 
-    await Promise.all(workers);
+    await Promise.all(workers)
   }
 
   /**
@@ -169,23 +169,23 @@ export function useAssetLoader(options?: {
    */
 
   async function preload(assets: AssetItem[]) {
-    loading.value = true;
+    loading.value = true
 
     const list = [...assets].sort((a, b) => {
       const map = {
         high: 0,
         normal: 1,
         low: 2,
-      };
+      }
 
-      return map[a.priority ?? "normal"] - map[b.priority ?? "normal"];
-    });
+      return map[a.priority ?? 'normal'] - map[b.priority ?? 'normal']
+    })
 
-    total.value += list.length;
+    total.value += list.length
 
-    await runQueue(list);
+    await runQueue(list)
 
-    loading.value = false;
+    loading.value = false
   }
 
   /**
@@ -196,7 +196,7 @@ export function useAssetLoader(options?: {
 
   async function preloadStages(stages: AssetItem[][]) {
     for (const stage of stages) {
-      await preload(stage);
+      await preload(stage)
     }
   }
 
@@ -205,12 +205,12 @@ export function useAssetLoader(options?: {
    */
   function loadAsset(asset: AssetItem) {
     switch (asset.type) {
-      case "image":
-        return loadImage(asset.url);
-      case "audio":
-        return loadAudio(asset.url);
-      case "video":
-        return loadVideo(asset.url);
+      case 'image':
+        return loadImage(asset.url)
+      case 'audio':
+        return loadAudio(asset.url)
+      case 'video':
+        return loadVideo(asset.url)
     }
   }
 
@@ -219,23 +219,24 @@ export function useAssetLoader(options?: {
    */
   async function loadAssets(assets: AssetItem[]) {
     if (!assets.length) {
-      return;
+      return
     }
-    loading.value = true;
-    total.value = assets.length;
-    loaded.value = 0;
-    errors.value = [];
+    loading.value = true
+    total.value = assets.length
+    loaded.value = 0
+    errors.value = []
     const tasks = assets.map(async (asset) => {
       try {
-        await loadAsset(asset);
+        await loadAsset(asset)
       } catch (e) {
-        errors.value.push(asset.url);
+        console.error(e)
+        errors.value.push(asset.url)
       } finally {
-        loaded.value++;
+        loaded.value++
       }
-    });
-    await Promise.all(tasks);
-    loading.value = false;
+    })
+    await Promise.all(tasks)
+    loading.value = false
   }
 
   /**
@@ -246,7 +247,7 @@ export function useAssetLoader(options?: {
    */
   async function loadGroups(groups: AssetItem[][]) {
     for (const group of groups) {
-      await loadAssets(group);
+      await loadAssets(group)
     }
   }
   return {
@@ -257,5 +258,6 @@ export function useAssetLoader(options?: {
     errors,
     loadAssets,
     loadGroups,
-  };
+    preloadStages,
+  }
 }

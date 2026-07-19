@@ -1,11 +1,7 @@
 <template>
   <view class="page">
     <!-- loading -->
-    <up-loading-page
-      v-if="loading"
-      :loading="loading"
-      loading-text=""
-    ></up-loading-page>
+    <up-loading-page v-if="loading" :loading="loading" loading-text="" />
 
     <view v-else>
       <!-- 背景 -->
@@ -13,7 +9,7 @@
       <HeaderIcons />
 
       <!-- 返回 -->
-      <view class="back" @click="back">{{ "<" }}返回</view>
+      <view class="back" @click="back"> {{ '<' }}返回 </view>
 
       <!-- 中间弹窗 -->
       <ChatDialog v-if="step === 1" />
@@ -30,60 +26,60 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import ChatDialog from "./components/ChatDialog.vue";
-import VideoDialog from "./components/VideoDialog.vue";
-import ResultDialog from "./components/ResultDialog.vue";
-import VideoPlayer from "./components/VideoPlayer.vue";
-import HeaderIcons from "@/components/HeaderIcons.vue";
-import { useAudioManager } from "@/managers/useAudioManager";
-import { onLoad } from "@dcloudio/uni-app";
-import { useSceneManager } from "@/managers/useSceneManager";
+import { ref } from 'vue'
+import ChatDialog from './components/ChatDialog.vue'
+import VideoDialog from './components/VideoDialog.vue'
+import ResultDialog from './components/ResultDialog.vue'
+import VideoPlayer from './components/VideoPlayer.vue'
+import HeaderIcons from '@/components/HeaderIcons.vue'
+import { useAudioManager } from '@/managers/useAudioManager'
+import { onLoad } from '@dcloudio/uni-app'
+import { useSceneManager } from '@/managers/useSceneManager'
 
-const step = ref(1);
-const showVideo = ref(false);
-const { pauseBGM } = useAudioManager();
-const { enter } = useSceneManager();
-const loading = ref(true);
+const step = ref(1)
+const showVideo = ref(false)
+const { pauseBGM } = useAudioManager()
+const { enter } = useSceneManager()
+const loading = ref(true)
 
 // 页面初始化
 onLoad(async () => {
-  await enter("guide");
-  loading.value = false;
-});
+  await enter('guide')
+  loading.value = false
+})
 function openVideo() {
-  pauseBGM();
-  showVideo.value = true;
+  pauseBGM()
+  showVideo.value = true
 }
 
 const next = async () => {
   if (step.value === 1) {
-    loading.value = true;
-    await enter("guide2");
-    loading.value = false;
+    loading.value = true
+    await enter('guide2')
+    loading.value = false
   }
   if (step.value === 2) {
-    loading.value = true;
-    await enter("guide3");
-    loading.value = false;
+    loading.value = true
+    await enter('guide3')
+    loading.value = false
   }
   if (step.value < 3) {
-    step.value++;
+    step.value++
   } else {
-    pauseBGM();
+    pauseBGM()
     uni.navigateTo({
-      url: "/pages/play/play",
-    });
+      url: '/pages/play/play',
+    })
   }
-};
+}
 
 const back = () => {
   if (step.value > 1) {
-    step.value--;
+    step.value--
   } else {
-    uni.navigateBack();
+    uni.navigateBack()
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

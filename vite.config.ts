@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
-import uni from "@dcloudio/vite-plugin-uni";
+import { defineConfig } from 'vite'
+import uni from '@dcloudio/vite-plugin-uni'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -8,7 +8,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         // 取消sass废弃API的报警
-        silenceDeprecations: ["legacy-js-api", "color-functions", "import"],
+        silenceDeprecations: ['legacy-js-api', 'color-functions', 'import'],
       },
     },
   },
@@ -16,7 +16,7 @@ export default defineConfig({
     port: 5100,
     fs: {
       // Allow serving files from one level up to the project root
-      allow: [".."],
+      allow: ['..'],
     },
   },
-});
+})

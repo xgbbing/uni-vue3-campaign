@@ -1,5 +1,6 @@
 <template>
-  <Component />
+  <!-- <Component /> -->
+  <view />
 </template>
 
 <script setup lang="ts">

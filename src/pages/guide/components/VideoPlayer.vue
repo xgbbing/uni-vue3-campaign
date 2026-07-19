@@ -3,20 +3,23 @@
     <view class="video-wrapper">
       <video class="video" :src="props.src" controls autoplay @ended="close" />
     </view>
-    <view class="close-btn" @click="close">✕</view>
+    <view class="close-btn" @click="close"> ✕ </view>
   </view>
 </template>
 
 <script setup lang="ts">
 const props = defineProps({
   show: Boolean,
-  src: String,
-});
+  src: {
+    type: String,
+    default: '',
+  },
+})
 
-const emit = defineEmits(["update:show"]);
+const emit = defineEmits(['update:show'])
 
 function close() {
-  emit("update:show", false);
+  emit('update:show', false)
 }
 </script>
 

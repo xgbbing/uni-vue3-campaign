@@ -1,5 +1,5 @@
 <template>
-	<view>
-		<web-view src="https://xgbbing.win"></web-view>
-	</view>
+  <view>
+    <web-view src="https://xgbbing.win" />
+  </view>
 </template>

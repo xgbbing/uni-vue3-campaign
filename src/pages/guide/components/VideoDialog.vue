@@ -2,18 +2,13 @@
   <view class="mask">
     <view class="dialog">
       <image class="cover" src="/static/guide-chat2.jpg" mode="aspectFill" />
-      <image
-        class="play"
-        src="/static/play-vedio-btn.jpg"
-        @click="emit('play')"
-        mode="aspectFill"
-      />
+      <image class="play" src="/static/play-vedio-btn.jpg" mode="aspectFill" @click="emit('play')" />
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-const emit = defineEmits(["play"]);
+const emit = defineEmits(['play'])
 </script>
 
 <style lang="scss" scoped>

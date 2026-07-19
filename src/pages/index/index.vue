@@ -1,33 +1,25 @@
 <template>
   <view class="container">
     <!-- loading -->
-    <up-loading-page
-      v-if="loading"
-      :loading="loading"
-      loading-text=""
-    ></up-loading-page>
+    <up-loading-page v-if="loading" :loading="loading" loading-text="" />
 
     <view v-else>
-      <image class="bg-image" src="/static/index-bg.jpg"></image>
+      <image class="bg-image" src="/static/index-bg.jpg" />
       <HeaderIcons />
 
       <view class="footer">
-        <up-button class="start-btn" type="primary" @click="goPlay">
-          开始游戏
-        </up-button>
+        <up-button class="start-btn" type="primary" @click="goPlay"> 开始游戏 </up-button>
 
         <!-- 勾选协议 -->
         <view class="checkbox-item">
           <up-checkbox-group v-model="checkedList">
-            <up-checkbox name="agree"></up-checkbox>
+            <up-checkbox name="agree" />
           </up-checkbox-group>
           <text class="custom-label">
             <text>我已阅读并同意</text>
-            <text class="link" @click="showRulesPopup()">《活动规则》</text>
+            <text class="link" @click="showRulesPopup()"> 《活动规则》 </text>
             <text>和</text>
-            <text class="link" @click="goToPage('agreement/privacy-policy')">
-              《隐私条款》
-            </text>
+            <text class="link" @click="goToPage('agreement/privacy-policy')"> 《隐私条款》 </text>
           </text>
         </view>
       </view>
@@ -39,53 +31,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
-import RulesPopup from "@/components/RulesPopup.vue";
-import HeaderIcons from "@/components/HeaderIcons.vue";
-import { useSceneManager } from "@/managers/useSceneManager";
+import { ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
+import RulesPopup from '@/components/RulesPopup.vue'
+import HeaderIcons from '@/components/HeaderIcons.vue'
+import { useSceneManager } from '@/managers/useSceneManager'
 
 defineOptions({
   options: {
-    styleIsolation: "shared",
+    styleIsolation: 'shared',
   },
-});
+})
 
-const loading = ref(true);
+const loading = ref(true)
 // 弹窗部分
-const rulesPopupVisible = ref<boolean>(false);
-const { enter } = useSceneManager();
+const rulesPopupVisible = ref<boolean>(false)
+const { enter } = useSceneManager()
 const showRulesPopup = () => {
-  rulesPopupVisible.value = true;
-};
+  rulesPopupVisible.value = true
+}
 
 // 勾选协议
-const checkedList = ref<any>([]);
+const checkedList = ref<any>([])
 const goPlay = async () => {
-  if (!checkedList.value.includes("agree")) {
+  if (!checkedList.value.includes('agree')) {
     uni.showToast({
-      title: "请先勾选协议",
-      icon: "none",
-    });
-    return;
+      title: '请先勾选协议',
+      icon: 'none',
+    })
+    return
   }
   uni.navigateTo({
-    url: "/pages/guide/guide",
-  });
-};
+    url: '/pages/guide/guide',
+  })
+}
 
 // 跳转页面
 const goToPage = (page: string) => {
   uni.navigateTo({
     url: `/pages/${page}`,
-  });
-};
+  })
+}
 
 // 页面初始化
 onLoad(async () => {
-  await enter("index");
-  loading.value = false;
-});
+  await enter('index')
+  loading.value = false
+})
 </script>
 
 <style lang="scss" scoped>

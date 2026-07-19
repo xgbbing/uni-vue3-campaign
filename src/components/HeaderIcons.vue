@@ -2,17 +2,9 @@
   <view class="top-icons">
     <view class="header-icons">
       <!-- 活动规则图标 -->
-      <image
-        class="rules-icon"
-        src="/static/rules-btn.jpg"
-        @click="showRules"
-      />
+      <image class="rules-icon" src="/static/rules-btn.jpg" @click="showRules" />
       <!-- 音乐图标：根据播放状态切换图片 -->
-      <image
-        class="music-icon"
-        :src="isPlaying ? '/static/music-play.jpg' : '/static/music-stop.jpg'"
-        @click="toggleMusic"
-      />
+      <image class="music-icon" :src="isPlaying ? '/static/music-play.jpg' : '/static/music-stop.jpg'" @click="toggleMusic" />
       <!-- 活动规则弹窗 -->
       <RulesPopup v-model:visible="rulesVisible" />
     </view>
@@ -20,29 +12,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import RulesPopup from "@/components/RulesPopup.vue"; // 之前定义的弹窗组件
-import { onLoad } from "@dcloudio/uni-app";
-import { useAudioManager } from "@/managers/useAudioManager";
+import { computed, ref } from 'vue'
+import RulesPopup from '@/components/RulesPopup.vue' // 之前定义的弹窗组件
+import { onLoad } from '@dcloudio/uni-app'
+import { useAudioManager } from '@/managers/useAudioManager'
 
-const rulesVisible = ref(false);
-const { playBGM, pauseBGM, activeBGM } = useAudioManager();
+const rulesVisible = ref(false)
+const { playBGM, pauseBGM, activeBGM } = useAudioManager()
 
-const isPlaying = computed(() => !!activeBGM.value);
+const isPlaying = computed(() => !!activeBGM.value)
 
 // 显示活动规则
 const showRules = () => {
-  rulesVisible.value = true;
-};
+  rulesVisible.value = true
+}
 
 // 切换音乐播放/暂停
 const toggleMusic = () => {
   if (isPlaying.value) {
-    pauseBGM();
+    pauseBGM()
   } else {
-    playBGM();
+    playBGM()
   }
-};
+}
 
 onLoad(() => {
   // TODO: 自动播放
@@ -70,7 +62,7 @@ onLoad(() => {
   // 	removeListeners();
   // });
   // #endif
-});
+})
 </script>
 
 <style lang="scss" scoped>

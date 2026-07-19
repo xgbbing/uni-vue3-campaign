@@ -1,9 +1,9 @@
-import { ref, computed } from "vue";
+import { ref, computed } from 'vue'
 
 /**
  * 资源类型
  */
-export type AssetType = "image" | "audio" | "video";
+export type AssetType = 'image' | 'audio' | 'video'
 
 /**
  * 优先级
@@ -38,21 +38,21 @@ export enum Priority {
 // }
 
 export interface AssetItem {
-  id?: string;
+  id?: string
 
-  url: string;
+  url: string
 
-  type: AssetType;
+  type: AssetType
 
-  priority?: Priority;
+  priority?: Priority
 
-  retry?: number;
+  retry?: number
 }
 
 export interface Scene {
-  id: string;
+  id: string
 
-  assets: AssetItem[];
+  assets: AssetItem[]
 }
 
 export function usePreloadManager() {
@@ -62,21 +62,21 @@ export function usePreloadManager() {
    * =========================
    */
 
-  const total = ref(0);
+  const total = ref(0)
 
-  const loaded = ref(0);
+  const loaded = ref(0)
 
-  const loading = ref(false);
+  const loading = ref(false)
 
-  const errors = ref<string[]>([]);
+  const errors = ref<string[]>([])
 
   const progress = computed(() => {
     if (!total.value) {
-      return 100;
+      return 100
     }
 
-    return Math.floor((loaded.value / total.value) * 100);
-  });
+    return Math.floor((loaded.value / total.value) * 100)
+  })
 
   /**
    * =========================
@@ -84,7 +84,7 @@ export function usePreloadManager() {
    * =========================
    */
 
-  const cache = new Map<string, any>();
+  const cache = new Map<string, any>()
 
   /**
    * =========================
@@ -92,11 +92,11 @@ export function usePreloadManager() {
    * =========================
    */
 
-  let queue: AssetItem[] = [];
+  const queue: AssetItem[] = []
 
-  let running = 0;
+  let running = 0
 
-  const concurrency = 4;
+  const concurrency = 4
 
   /**
    * =========================
@@ -104,7 +104,7 @@ export function usePreloadManager() {
    * =========================
    */
 
-  let idleId: number | null = null;
+  // let idleId: number | null = null
 
   /**
    * =========================
@@ -114,27 +114,28 @@ export function usePreloadManager() {
 
   function loadImage(asset: AssetItem) {
     return new Promise((resolve) => {
-      const img = new Image();
+      const img = new Image()
 
       // 浏览器优先级
 
       try {
-        img.fetchPriority =
-          asset.priority === Priority.CRITICAL ? "high" : "low";
-      } catch {}
+        img.fetchPriority = asset.priority === Priority.CRITICAL ? 'high' : 'low'
+      } catch (e) {
+        console.error('图片资源加载失败:', e)
+      }
 
       img.onload = () => {
-        cache.set(asset.url, img);
+        cache.set(asset.url, img)
 
-        resolve(true);
-      };
+        resolve(true)
+      }
 
       img.onerror = () => {
-        resolve(false);
-      };
+        resolve(false)
+      }
 
-      img.src = asset.url;
-    });
+      img.src = asset.url
+    })
   }
 
   /**
@@ -145,17 +146,17 @@ export function usePreloadManager() {
 
   async function loadAudio(asset: AssetItem) {
     try {
-      const res = await fetch(asset.url);
+      const res = await fetch(asset.url)
 
-      const blob = await res.blob();
+      const blob = await res.blob()
 
-      const url = URL.createObjectURL(blob);
+      const url = URL.createObjectURL(blob)
 
-      cache.set(asset.url, url);
+      cache.set(asset.url, url)
 
-      return true;
+      return true
     } catch {
-      return false;
+      return false
     }
   }
 
@@ -167,24 +168,24 @@ export function usePreloadManager() {
 
   function loadVideo(asset: AssetItem) {
     return new Promise((resolve) => {
-      const video = document.createElement("video");
+      const video = document.createElement('video')
 
-      video.preload = "metadata";
+      video.preload = 'metadata'
 
       video.onloadedmetadata = () => {
-        cache.set(asset.url, video);
+        cache.set(asset.url, video)
 
-        resolve(true);
-      };
+        resolve(true)
+      }
 
       video.onerror = () => {
-        resolve(false);
-      };
+        resolve(false)
+      }
 
-      video.src = asset.url;
+      video.src = asset.url
 
-      video.load();
-    });
+      video.load()
+    })
   }
 
   /**
@@ -195,18 +196,18 @@ export function usePreloadManager() {
 
   async function loadAsset(asset: AssetItem) {
     if (cache.has(asset.url)) {
-      return true;
+      return true
     }
 
     switch (asset.type) {
-      case "image":
-        return loadImage(asset);
+      case 'image':
+        return loadImage(asset)
 
-      case "audio":
-        return loadAudio(asset);
+      case 'audio':
+        return loadAudio(asset)
 
-      case "video":
-        return loadVideo(asset);
+      case 'video':
+        return loadVideo(asset)
     }
   }
 
@@ -218,25 +219,25 @@ export function usePreloadManager() {
 
   async function worker() {
     while (queue.length) {
-      const asset = queue.shift()!;
+      const asset = queue.shift()!
 
-      running++;
+      running++
 
-      const success = await loadAsset(asset);
+      const success = await loadAsset(asset)
 
-      running--;
+      running--
 
-      loaded.value++;
+      loaded.value++
 
       if (!success) {
-        errors.value.push(asset.url);
+        errors.value.push(asset.url)
       }
     }
   }
 
   async function runQueue() {
     while (running < concurrency && queue.length) {
-      worker();
+      worker()
     }
   }
 
@@ -247,11 +248,11 @@ export function usePreloadManager() {
    */
 
   async function preload(assets: AssetItem[]) {
-    queue.push(...assets.sort((a, b) => (a.priority ?? 2) - (b.priority ?? 2)));
+    queue.push(...assets.sort((a, b) => (a.priority ?? 2) - (b.priority ?? 2)))
 
-    total.value += assets.length;
+    total.value += assets.length
 
-    await runQueue();
+    await runQueue()
   }
 
   /**
@@ -261,19 +262,19 @@ export function usePreloadManager() {
    */
 
   function idlePreload(assets: AssetItem[]) {
-    let index = 0;
+    let index = 0
 
     function idle(deadline: IdleDeadline) {
       while (deadline.timeRemaining() > 5 && index < assets.length) {
-        preload([assets[index++]]);
+        preload([assets[index++]])
       }
 
       if (index < assets.length) {
-        idleId = requestIdleCallback(idle);
+        requestIdleCallback(idle)
       }
     }
 
-    idleId = requestIdleCallback(idle);
+    requestIdleCallback(idle)
   }
 
   /**
@@ -288,10 +289,10 @@ export function usePreloadManager() {
         scene.assets.map((item) => ({
           ...item,
           priority: Priority.CRITICAL,
-        })),
-      );
+        }))
+      )
     } else {
-      idlePreload(scene.assets);
+      idlePreload(scene.assets)
     }
   }
 
@@ -304,5 +305,5 @@ export function usePreloadManager() {
     preload,
     preloadScene,
     cache,
-  };
+  }
 }
