@@ -1,19 +1,19 @@
-import request from "@/api/request";
+import request from '@/api/request'
 
 export default {
   get(url: string, data: any) {
     return request({
-      method: "GET",
+      method: 'GET',
       url,
       data,
-    });
+    })
   },
 
   post(url: string, data: any) {
     return request({
-      method: "POST",
+      method: 'POST',
       url,
       data,
-    });
+    })
   },
-};
+}

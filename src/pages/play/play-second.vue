@@ -10,27 +10,37 @@
       <!-- 调试控制按钮（仅 showDebug 为 true 时显示） -->
       <view v-if="showDebug && !isSuccess" class="debug-controls" @touchmove.stop.prevent>
         <view class="control-row">
-          <view class="control-btn" @touchstart.stop="zoomIn"> 放大 </view>
-          <view class="control-btn" @touchstart.stop="zoomOut"> 缩小 </view>
+          <view class="control-btn" @touchstart.stop="zoomIn">放大</view>
+          <view class="control-btn" @touchstart.stop="zoomOut">缩小</view>
         </view>
         <view class="control-row">
-          <view class="control-btn" @touchstart.stop="rotateCW"> 顺时针 </view>
-          <view class="control-btn" @touchstart.stop="rotateCCW"> 逆时针 </view>
+          <view class="control-btn" @touchstart.stop="rotateCW">顺时针</view>
+          <view class="control-btn" @touchstart.stop="rotateCCW">逆时针</view>
         </view>
       </view>
 
       <!-- 可拖动的手机图片 -->
-      <view class="draggable-phone" :style="phoneStyle" @touchstart="onTouchStart" @touchmove.stop.prevent="onTouchMove" @touchend="onTouchEnd">
+      <view
+        class="draggable-phone"
+        :style="phoneStyle"
+        @touchstart="onTouchStart"
+        @touchmove.stop.prevent="onTouchMove"
+        @touchend="onTouchEnd"
+      >
         <image class="phone" src="/static/phone.png" mode="aspectFill" />
       </view>
 
       <!-- 调试信息（开发时使用，生产环境可删除） -->
       <view v-if="showDebug && !isSuccess" class="debug-panel">
-        <text class="debug-text"> 偏移: X={{ Math.round(currentOffsetX) }}px Y={{ Math.round(currentOffsetY) }}px </text>
-        <text class="debug-text"> 缩放: {{ currentScale.toFixed(2) }}x </text>
-        <text class="debug-text"> 旋转: {{ currentRotation.toFixed(1) }}° </text>
-        <text class="debug-text"> 距目标: {{ distanceToTarget.toFixed(0) }}px | 角度: {{ angleDiff.toFixed(1) }}° </text>
-        <text class="debug-text"> 状态: {{ isSuccess ? '成功' : '偏离' }} </text>
+        <text class="debug-text">
+          偏移: X={{ Math.round(currentOffsetX) }}px Y={{ Math.round(currentOffsetY) }}px
+        </text>
+        <text class="debug-text">缩放: {{ currentScale.toFixed(2) }}x</text>
+        <text class="debug-text">旋转: {{ currentRotation.toFixed(1) }}°</text>
+        <text class="debug-text">
+          距目标: {{ distanceToTarget.toFixed(0) }}px | 角度: {{ angleDiff.toFixed(1) }}°
+        </text>
+        <text class="debug-text">状态: {{ isSuccess ? '成功' : '偏离' }}</text>
       </view>
 
       <!-- 成功动画 -->
@@ -111,7 +121,9 @@ const phoneStyle = computed(() => {
 
   return {
     transform: `translate(${tx}px, ${ty}px) scale(${s}) rotate(${r}deg)`,
-    transition: gestureState.isActive ? 'none' : 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transition: gestureState.isActive
+      ? 'none'
+      : 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
   }
 })
 
@@ -140,7 +152,8 @@ function generateInitialState() {
   const scale = INITIAL_SCALE_MIN + Math.random() * (INITIAL_SCALE_MAX - INITIAL_SCALE_MIN)
 
   // 随机旋转：60~90度 或 -60~-90度
-  const rotationMagnitude = INITIAL_ROTATION_MIN + Math.random() * (INITIAL_ROTATION_MAX - INITIAL_ROTATION_MIN)
+  const rotationMagnitude =
+    INITIAL_ROTATION_MIN + Math.random() * (INITIAL_ROTATION_MAX - INITIAL_ROTATION_MIN)
   const rotationSign = Math.random() > 0.5 ? 1 : -1
   const rotation = rotationMagnitude * rotationSign
 
@@ -219,8 +232,12 @@ function rotateCCW() {
 
 // ==================== 成功检测 ====================
 function checkSuccess() {
-  const distOk = distanceToTarget.value <= POSITION_TOLERANCE_MAX && distanceToTarget.value >= POSITION_TOLERANCE_MIN
-  const angleOk = currentRotation.value % 360 <= ANGLE_TOLERANCE_MAX && currentRotation.value % 360 >= ANGLE_TOLERANCE_MIN
+  const distOk =
+    distanceToTarget.value <= POSITION_TOLERANCE_MAX &&
+    distanceToTarget.value >= POSITION_TOLERANCE_MIN
+  const angleOk =
+    currentRotation.value % 360 <= ANGLE_TOLERANCE_MAX &&
+    currentRotation.value % 360 >= ANGLE_TOLERANCE_MIN
   const scaleOk = Math.abs(currentScale.value - PHONE_SCALE) <= SCALE_TOLERANCE
 
   if (distOk && angleOk && scaleOk) {

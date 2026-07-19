@@ -5,7 +5,14 @@
 
     <view v-else>
       <!-- 背景 -->
-      <image class="bg" :src="success ? '/static/open-after.jpg' : '/static/open-before.jpg'" mode="aspectFill" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd" />
+      <image
+        class="bg"
+        :src="success ? '/static/open-after.jpg' : '/static/open-before.jpg'"
+        mode="aspectFill"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
+      />
 
       <!-- 成功动画 -->
       <image v-if="success" class="thumb" src="/static/good.jpg" mode="widthFix" />

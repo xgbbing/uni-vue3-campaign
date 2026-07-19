@@ -3,7 +3,7 @@
     <view class="video-wrapper">
       <video class="video" :src="props.src" controls autoplay @ended="close" />
     </view>
-    <view class="close-btn" @click="close"> ✕ </view>
+    <view class="close-btn" @click="close">✕</view>
   </view>
 </template>
 

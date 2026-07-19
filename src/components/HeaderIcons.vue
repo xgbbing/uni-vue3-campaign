@@ -4,7 +4,11 @@
       <!-- 活动规则图标 -->
       <image class="rules-icon" src="/static/rules-btn.jpg" @click="showRules" />
       <!-- 音乐图标：根据播放状态切换图片 -->
-      <image class="music-icon" :src="isPlaying ? '/static/music-play.jpg' : '/static/music-stop.jpg'" @click="toggleMusic" />
+      <image
+        class="music-icon"
+        :src="isPlaying ? '/static/music-play.jpg' : '/static/music-stop.jpg'"
+        @click="toggleMusic"
+      />
       <!-- 活动规则弹窗 -->
       <RulesPopup v-model:visible="rulesVisible" />
     </view>

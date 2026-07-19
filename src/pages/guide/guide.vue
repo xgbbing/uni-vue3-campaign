@@ -9,7 +9,7 @@
       <HeaderIcons />
 
       <!-- 返回 -->
-      <view class="back" @click="back"> {{ '<' }}返回 </view>
+      <view class="back" @click="back">{{ '<' }}返回</view>
 
       <!-- 中间弹窗 -->
       <ChatDialog v-if="step === 1" />

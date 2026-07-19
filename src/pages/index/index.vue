@@ -8,7 +8,7 @@
       <HeaderIcons />
 
       <view class="footer">
-        <up-button class="start-btn" type="primary" @click="goPlay"> 开始游戏 </up-button>
+        <up-button class="start-btn" type="primary" @click="goPlay">开始游戏</up-button>
 
         <!-- 勾选协议 -->
         <view class="checkbox-item">
@@ -17,9 +17,9 @@
           </up-checkbox-group>
           <text class="custom-label">
             <text>我已阅读并同意</text>
-            <text class="link" @click="showRulesPopup()"> 《活动规则》 </text>
+            <text class="link" @click="showRulesPopup()">《活动规则》</text>
             <text>和</text>
-            <text class="link" @click="goToPage('agreement/privacy-policy')"> 《隐私条款》 </text>
+            <text class="link" @click="goToPage('agreement/privacy-policy')">《隐私条款》</text>
           </text>
         </view>
       </view>
