@@ -1,1 +1,0 @@
-{"version":3,"file":"privacy-policy.js","sources":["pages/agreement/privacy-policy.vue?type=page"],"sourcesContent":["import MiniProgramPage from '/Users/alice/Desktop/quanyucode/uni-vue3-campaign/src/pages/agreement/privacy-policy.vue'\nwx.createPage(MiniProgramPage)"],"names":[],"mappings":";;;;;;;;;AACA,GAAG,WAAW,eAAe;"}

@@ -1,1 +1,0 @@
-{"version":3,"file":"sceneFlow.js","sources":["managers/sceneFlow.ts"],"sourcesContent":["export const sceneFlow = {\r\n\tinitial: 'home',\r\n\tpreload: {\r\n\t\thome: ['guide'],\r\n\t\tguide: ['play'],\r\n\t},\r\n}"],"names":[],"mappings":";AAAO,MAAM,YAAY;AAAA,EACxB,SAAS;AAAA,EACT,SAAS;AAAA,IACR,MAAM,CAAC,OAAO;AAAA,IACd,OAAO,CAAC,MAAM;AAAA,EAAA;AAEhB;;"}
